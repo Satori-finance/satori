@@ -286,7 +286,7 @@
   color: #859900;
 }
     </style>
-    <link href="stylesheets/screen-af14d9f9.css" rel="stylesheet" media="screen" />
+    <link href="stylesheets/screen-7734d744.css" rel="stylesheet" media="screen" />
     <link href="stylesheets/print-a151e035.css" rel="stylesheet" media="print" />
       <script src="javascripts/all-b12a2749.js"></script>
 
@@ -295,7 +295,7 @@
     </script>
   </head>
 
-  <body class="index" data-languages="[&quot;shell&quot;,&quot;ruby&quot;,&quot;python&quot;,&quot;javascript&quot;]">
+  <body class="index" data-languages="[&quot;python&quot;,&quot;javascript&quot;]">
     <a href="#" id="nav-button">
       <span>
         NAV
@@ -305,8 +305,6 @@
     <div class="toc-wrapper">
       <img src="images/logo-36af77e2.png" class="logo" alt="" />
         <div class="lang-selector">
-              <a href="#" data-language-name="shell">shell</a>
-              <a href="#" data-language-name="ruby">ruby</a>
               <a href="#" data-language-name="python">python</a>
               <a href="#" data-language-name="javascript">javascript</a>
         </div>
@@ -319,19 +317,31 @@
             <a href="#introduction" class="toc-h1 toc-link" data-title="Introduction">Introduction</a>
           </li>
           <li>
-            <a href="#authentication" class="toc-h1 toc-link" data-title="Authentication">Authentication</a>
-          </li>
-          <li>
-            <a href="#kittens" class="toc-h1 toc-link" data-title="Kittens">Kittens</a>
+            <a href="#perpetual-contract-concepts" class="toc-h1 toc-link" data-title="Perpetual Contract Concepts">Perpetual Contract Concepts</a>
               <ul class="toc-list-h2">
                   <li>
-                    <a href="#get-all-kittens" class="toc-h2 toc-link" data-title="Get All Kittens">Get All Kittens</a>
+                    <a href="#margin" class="toc-h2 toc-link" data-title="Margin">Margin</a>
                   </li>
                   <li>
-                    <a href="#get-a-specific-kitten" class="toc-h2 toc-link" data-title="Get a Specific Kitten">Get a Specific Kitten</a>
+                    <a href="#liquidations" class="toc-h2 toc-link" data-title="Liquidations">Liquidations</a>
                   </li>
                   <li>
-                    <a href="#delete-a-specific-kitten" class="toc-h2 toc-link" data-title="Delete a Specific Kitten">Delete a Specific Kitten</a>
+                    <a href="#automatic-deleverage-system" class="toc-h2 toc-link" data-title="Automatic Deleverage System">Automatic Deleverage System</a>
+                  </li>
+                  <li>
+                    <a href="#funding-costs" class="toc-h2 toc-link" data-title="Funding Costs">Funding Costs</a>
+                  </li>
+                  <li>
+                    <a href="#price-indices" class="toc-h2 toc-link" data-title="Price Indices">Price Indices</a>
+                  </li>
+                  <li>
+                    <a href="#price-oracles" class="toc-h2 toc-link" data-title="Price Oracles">Price Oracles</a>
+                  </li>
+                  <li>
+                    <a href="#insurance-vault" class="toc-h2 toc-link" data-title="Insurance Vault">Insurance Vault</a>
+                  </li>
+                  <li>
+                    <a href="#price-and-time-limits" class="toc-h2 toc-link" data-title="Price and Time Limits">Price and Time Limits</a>
                   </li>
               </ul>
           </li>
@@ -344,184 +354,360 @@
       <div class="dark-box"></div>
       <div class="content">
         <h1 id='introduction'>Introduction</h1>
-<p>Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.</p>
+<p>Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized financial derivatives platform built on Polkadot. It features a hybrid of orderbook and AMM models to provide comprehensive exposure to a wide range of assets, and an “off-chain aggregation and on-chain settlement” design that combines the security and transparency of a decentralized exchange, with the speed and usability of a centralized exchange.</p>
+<h1 id='perpetual-contract-concepts'>Perpetual Contract Concepts</h1><h2 id='margin'>Margin</h2><h3 id='early-warning-margin-rate'>Early warning margin rate</h3>
+<p>It’s an early warning line for the margin rate of a user&#39;s position.
+Setting: pre-set early warning margin rate = underlying maintenance margin rate * 200%.</p>
+<h3 id='restrictions-on-opening-positions'>Restrictions on opening positions</h3>
+<p>If the user margin rate is sufficient to open a position, available margin &gt;= new opening cost*105% is required to open a successful order, subject to the actual transaction price; (subject to existing positions).
+When the market volatility &gt;= 2%/minute, the user cannot open a position for 20 seconds; text message: the current market volatility is high, the risk is high, temporarily do not support opening a position.</p>
+<h3 id='transfer-out-restrictions'>Transfer out restrictions</h3>
+<p>Users are not allowed to transfer out their account balance when the margin rate of their position &lt;= the alert margin rate.
+Transferable amount = available balance / 105%.</p>
+<h2 id='liquidations'>Liquidations</h2>
+<p>Accounts where the margin rate is less than or equal to the maintenance margin rate may be liquidated.</p>
 
-<p>We have language bindings in Shell, Ruby, Python, and JavaScript! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.</p>
+<p>When a position burst is about to be triggered, the platform will cancel all current open orders to release margin and maintain the position. A message will be displayed that the order has been successfully withdrawn and the open order has been cancelled to release margin.</p>
 
-<p>This example API documentation page was created with <a href="https://github.com/slatedocs/slate">Slate</a>. Feel free to edit it and use it as a base for your own API&#39;s documentation.</p>
-<h1 id='authentication'>Authentication</h1>
-<blockquote>
-<p>To authorize, use this code:</p>
-</blockquote>
-<div class="highlight"><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
+<p>The platform will calculate the risk factor of position burst, when the risk value of burst reaches 70%, it will send a strong closing warning notice to the user by email or SMS. The early warning notice will be judged every hour and sent again after the mark is reached. SMS notifications will also be made when a burst position is actually triggered to be initiated.</p>
 
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-</code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">kittn</span>
+<aside class="formula">
+  <code>
+    risk of blow-out factor = maintenance margin / (available balance + position margin) \* 100%.
+  </code>
+</aside>
 
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="p">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-</code></pre></div><div class="highlight"><pre class="highlight shell tab-shell"><code><span class="c"># With shell, you can just pass the correct header with each request</span>
-curl <span class="s2">"api_endpoint_here"</span> <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Authorization: meowmeowmeow"</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="kd">const</span> <span class="nx">kittn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">kittn</span><span class="dl">"</span><span class="p">);</span>
+<p>If the maintenance margin requirement is not met after the cancellation of an outstanding order, this remaining position is taken over by the strong closing engine at the bankruptcy price (i.e., the price at which the equity in the user&#39;s account equals zero) and this bankruptcy price is not displayed on the K-line.</p>
 
-<span class="kd">let</span> <span class="nx">api</span> <span class="o">=</span> <span class="nx">kittn</span><span class="p">.</span><span class="nx">authorize</span><span class="p">(</span><span class="dl">"</span><span class="s2">meowmeowmeow</span><span class="dl">"</span><span class="p">);</span>
-</code></pre></div>
-<blockquote>
-<p>Make sure to replace <code>meowmeowmeow</code> with your API key.</p>
-</blockquote>
+<p>The user&#39;s forced liquidation record can be seen directly in the history of commissions and transactions, where the transaction price is the bankruptcy price, not the forced liquidation price.</p>
 
-<p>Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our <a href="http://example.com/developers">developer portal</a>.</p>
+<p>After the system takes over the position, if the market price is better than the bankruptcy price, the order will be delegated to the market to be filled in a matchmaking manner as soon as possible.</p>
 
-<p>Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:</p>
+<p>If a strongly closed position is not able to be closed in the market and when the price reaches the insolvency price and the premium is not sufficient to cover it, the ADL system will reduce the positions of investors holding positions in the opposite direction according to the ranking and notify the user by SMS or email.</p>
 
-<p><code>Authorization: meowmeowmeow</code></p>
+<p>User&#39;s loss on forced liquidation: all positions in all contracts will be forced to close. The loss of a user subject to forced liquidation is close to or equal to all the assets in his virtual contract account.</p>
+<h3 id='split-orders-for-large-position-burst'>Split orders for large position burst</h3>
+<p>When a large position burst event occurs in the trading market, the large position order is split into a number of small sub-orders for separate pending sell orders. In practice, burst position splitting involves complex calculation and sequencing issues.</p>
+<h2 id='automatic-deleverage-system'>Automatic Deleverage System</h2><h3 id='adl-trigger-description'>ADL trigger description</h3>
+<p>When an investor is forced to close a position, their remaining positions will be taken over by the forced liquidation system. If the force close position is not able to be closed out in the market and when the price reaches the bust price and the insurance is not sufficient to cover it, the ADL system will reduce the position for traders holding positions in the opposite direction. It essentially allows the profitable to share the risk of those who have blown their positions.</p>
+
+<p>The automatic position reduction strategy is triggered when 50% of the risk reserve is still insufficient to close out a position based on the bankruptcy price of the forced liquidation position. The ADL ranking is based on the profit/loss of the position and the effective leverage used, i.e., the higher the profit and the more leverage used the higher the ranking. The highest ranked trader in the system will be selected first by the Auto-Reduction system.</p>
+
+<p>Traders can view their priority ranking for automatic position reduction via the “ADL Ranking” indicator, like the chart below. The Auto-Reduction will close and reduce positions based on the bankruptcy price of the forced liquidation position. If a user&#39;s position is automatically reduced, they will receive an SMS or email notification and the floating profit of the position will be converted to a real profit. The rule for the number of positions to be reduced: after the first user&#39;s position in line has been fully reduced, the second position will continue to be reduced and so on.</p>
+<h3 id='adl-ranking-calculation-method'>ADL ranking calculation method</h3>
+<aside class="formula">
+  <code>
+    Ranking = % profit \* effective leverage (if profit, i.e. % profit > 0) = % profit / effective leverage (if loss, i.e. % profit < 0)
+  </code>
+</aside>
+
+<p>Where:</p>
+
+<ul>
+<li><p><code>Effective leverage</code> is <code>abs(marker value) / (marker value - bankruptcy value)</code></p></li>
+<li><p><code>Profit percentage</code> is <code>(mark value - average open value) / |average open value|</code></p></li>
+<li><p><code>Marker value</code> is <code>value of position at marker price</code></p></li>
+<li><p><code>Insolvency value</code> is <code>value of position at insolvency price</code></p></li>
+<li><p><code>Average open value</code> is <code>value of position at average open price</code></p></li>
+</ul>
+<h2 id='funding-costs'>Funding Costs</h2>
+<p>We anchor the market price of perpetual contracts to the spot price through a funding fee mechanism.</p>
+
+<p>Long positions pay short positions when the market is bullish; short positions pay long positions when the market is bearish.</p>
+
+<p>The funding fee is charged every 8 hours, at 4:00, 12:00 and 20:00 each day.</p>
+
+<p>The funding fee is calculated as follows:</p>
+
+<aside class="formula">
+  <code>
+  Funding fee = value of position held * funding fee rate.
+  </code>
+</aside>
+<h3 id='funding-fee-rate-calculation'>Funding Fee Rate Calculation</h3>
+<p>The funding fee rate is comprised of two components: the interest rate and the premium.</p>
+
+<p>The premium is calculated as:</p>
+
+<aside class="formula">
+<code>
+Premium = [Max(0, Impact Bid Price - Index Price) - Max(0, Index Price - Impact Ask Price)] / Price Index
+</code>
+</aside>
+
+<p>where the impact bid and impact ask prices refer to the average execution price for a market sell (bid) or market buy (ask) of the impact notational value.</p>
+
+<p>Altogether, the funding rate is calculated as:</p>
+
+<aside class="formula">
+  <code>
+    Funding rate = Premium + Clamp(Interest Rate - Premium, a, b).
+  </code>
+</aside>
+
+<p>where for BTC, ETH, EOS, XRP, BCH, BSV, ETC, LTC, TRX,</p>
+
+<aside class="formula">
+  <code>
+    a = -0.3%,b = 0.3%
+  </code>
+</aside>
+
+<p>The <code>Clamp</code> function <code>Clamp(x, min, max)</code>, returns <code>min</code> when <code>x &lt; = min</code> and <code>max</code> when <code>x&gt;= max</code>.</p>
+<h2 id='price-indices'>Price Indices</h2>
+<p>To ensure that the spot index price reasonably reflects the fair spot market price of each coin, we calcualte the index price as a weighted average of prices from 3 or more mainstream exchanges.</p>
+<h4 id='btc-usd'>BTC/USD</h4>
+<p><code>Okex</code>
+<code>Binance</code>
+<code>Coinbase</code>
+<code>Bitstamp</code></p>
+<h4 id='eth-usd'>ETH/USD</h4>
+<p><code>Okex</code>
+<code>Binance</code>
+<code>Coinbase</code>
+<code>Bitstamp</code></p>
+<h4 id='ltc-usd'>LTC/USD</h4>
+<p><code>Okex</code>
+<code>Coinbase</code>
+<code>Bitstamp</code></p>
+<h4 id='xrp-usd'>XRP/USD</h4>
+<p><code>Okex</code>
+<code>Coinbase</code>
+<code>Bitstamp</code></p>
+
+<p>We has also implemented logic to ensure that index fluctuations are within the normal range when there is a significant deviation from the price of a single exchange.</p>
+
+<p>If an exchange price deviates by more than 3% relative to the median price of all exchanges, that exchange price is calculated as median*0.97 or median*1.03.).</p>
+<h2 id='price-oracles'>Price Oracles</h2>
+<p>The Oracle Price is equal to the median of the reported prices of the 15 independent Chainlink master nodes. It&#39;s used to calculate:</p>
+
+<ul>
+<li>unrealised gains and losses.</li>
+<li>estimated strong parity.</li>
+<li>capital costs.</li>
+</ul>
+<h2 id='insurance-vault'>Insurance Vault</h2>
+<p>The insurance vault is a reserve used by the platform to protect against the risk of position penetration, the main sources of which include a percentage of the commission generated by the transaction, and the surplus of the burst position.</p>
+
+<p>In the event of a breakdown loss arising from a burst position, priority will be given to using the insurance pool to cover the loss.</p>
+<h2 id='price-and-time-limits'>Price and Time Limits</h2><h3 id='price-limits'>Price limits</h3>
+<p>When a user chooses to buy, there is a maximum buy price and no buy order can be submitted above that price. The calculation formula is:</p>
+
+<p>Maximum Bid Price = Latest Price * 101%</p>
+
+<p>When a user selects to sell, there is a minimum sell price and no sell order can be submitted below that price. The formula is:</p>
+
+<p>Minimum Sell Price = Latest Price / 101%</p>
+<h3 id='time-limits'>Time limits</h3>
+<p>A user may not place a closing order within 2 minutes of placing an opening order.</p>
+
+<!-- ```ruby
+require 'kittn'
+
+api = Kittn::APIClient.authorize!('meowmeowmeow')
+```
+
+```python
+import kittn
+
+api = kittn.authorize('meowmeowmeow')
+```
+
+```shell
+# With shell, you can just pass the correct header with each request
+curl "api_endpoint_here" \
+  -H "Authorization: meowmeowmeow"
+```
+
+```javascript
+const kittn = require("kittn");
+
+let api = kittn.authorize("meowmeowmeow");
+```
+
+> Make sure to replace `meowmeowmeow` with your API key.
+
+Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
+
+Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
+
+`Authorization: meowmeowmeow`
 
 <aside class="notice">
 You must replace <code>meowmeowmeow</code> with your personal API key.
 </aside>
-<h1 id='kittens'>Kittens</h1><h2 id='get-all-kittens'>Get All Kittens</h2><div class="highlight"><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
 
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="nf">kittens</span><span class="p">.</span><span class="nf">get</span>
-</code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">kittn</span>
+# Kittens
 
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="p">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="n">kittens</span><span class="p">.</span><span class="n">get</span><span class="p">()</span>
-</code></pre></div><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"http://example.com/api/kittens"</span> <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Authorization: meowmeowmeow"</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="kd">const</span> <span class="nx">kittn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">kittn</span><span class="dl">"</span><span class="p">);</span>
+## Get All Kittens
 
-<span class="kd">let</span> <span class="nx">api</span> <span class="o">=</span> <span class="nx">kittn</span><span class="p">.</span><span class="nx">authorize</span><span class="p">(</span><span class="dl">"</span><span class="s2">meowmeowmeow</span><span class="dl">"</span><span class="p">);</span>
-<span class="kd">let</span> <span class="nx">kittens</span> <span class="o">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">kittens</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
-</code></pre></div>
-<blockquote>
-<p>The above command returns JSON structured like this:</p>
-</blockquote>
-<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">[</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Fluffums"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calico"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Max"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unknown"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">]</span><span class="w">
-</span></code></pre></div>
-<p>This endpoint retrieves all kittens.</p>
-<h3 id='http-request'>HTTP Request</h3>
-<p><code>GET http://example.com/api/kittens</code></p>
-<h3 id='query-parameters'>Query Parameters</h3>
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>include_cats</td>
-<td>false</td>
-<td>If set to true, the result will also include cats.</td>
-</tr>
-<tr>
-<td>available</td>
-<td>true</td>
-<td>If set to false, the result will include kittens that have already been adopted.</td>
-</tr>
-</tbody></table>
+```ruby
+require 'kittn'
+
+api = Kittn::APIClient.authorize!('meowmeowmeow')
+api.kittens.get
+```
+
+```python
+import kittn
+
+api = kittn.authorize('meowmeowmeow')
+api.kittens.get()
+```
+
+```shell
+curl "http://example.com/api/kittens" \
+  -H "Authorization: meowmeowmeow"
+```
+
+```javascript
+const kittn = require("kittn");
+
+let api = kittn.authorize("meowmeowmeow");
+let kittens = api.kittens.get();
+```
+
+> The above command returns JSON structured like this:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Fluffums",
+    "breed": "calico",
+    "fluffiness": 6,
+    "cuteness": 7
+  },
+  {
+    "id": 2,
+    "name": "Max",
+    "breed": "unknown",
+    "fluffiness": 5,
+    "cuteness": 10
+  }
+]
+```
+
+This endpoint retrieves all kittens.
+
+### HTTP Request
+
+`GET http://example.com/api/kittens`
+
+### Query Parameters
+
+| Parameter    | Default | Description                                                                      |
+| ------------ | ------- | -------------------------------------------------------------------------------- |
+| include_cats | false   | If set to true, the result will also include cats.                               |
+| available    | true    | If set to false, the result will include kittens that have already been adopted. |
 
 <aside class="success">
 Remember — a happy kitten is an authenticated kitten!
 </aside>
-<h2 id='get-a-specific-kitten'>Get a Specific Kitten</h2><div class="highlight"><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
 
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="nf">kittens</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-</code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">kittn</span>
+## Get a Specific Kitten
 
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="p">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="n">kittens</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-</code></pre></div><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"http://example.com/api/kittens/2"</span> <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Authorization: meowmeowmeow"</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="kd">const</span> <span class="nx">kittn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">kittn</span><span class="dl">"</span><span class="p">);</span>
+```ruby
+require 'kittn'
 
-<span class="kd">let</span> <span class="nx">api</span> <span class="o">=</span> <span class="nx">kittn</span><span class="p">.</span><span class="nx">authorize</span><span class="p">(</span><span class="dl">"</span><span class="s2">meowmeowmeow</span><span class="dl">"</span><span class="p">);</span>
-<span class="kd">let</span> <span class="nx">max</span> <span class="o">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">kittens</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
-</code></pre></div>
-<blockquote>
-<p>The above command returns JSON structured like this:</p>
-</blockquote>
-<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Max"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unknown"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
-<p>This endpoint retrieves a specific kitten.</p>
+api = Kittn::APIClient.authorize!('meowmeowmeow')
+api.kittens.get(2)
+```
+
+```python
+import kittn
+
+api = kittn.authorize('meowmeowmeow')
+api.kittens.get(2)
+```
+
+```shell
+curl "http://example.com/api/kittens/2" \
+  -H "Authorization: meowmeowmeow"
+```
+
+```javascript
+const kittn = require("kittn");
+
+let api = kittn.authorize("meowmeowmeow");
+let max = api.kittens.get(2);
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+  "id": 2,
+  "name": "Max",
+  "breed": "unknown",
+  "fluffiness": 5,
+  "cuteness": 10
+}
+```
+
+This endpoint retrieves a specific kitten.
 
 <aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
-<h3 id='http-request-2'>HTTP Request</h3>
-<p><code>GET http://example.com/kittens/&lt;ID&gt;</code></p>
-<h3 id='url-parameters'>URL Parameters</h3>
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>ID</td>
-<td>The ID of the kitten to retrieve</td>
-</tr>
-</tbody></table>
-<h2 id='delete-a-specific-kitten'>Delete a Specific Kitten</h2><div class="highlight"><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
 
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="nf">kittens</span><span class="p">.</span><span class="nf">delete</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-</code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">kittn</span>
+### HTTP Request
 
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="p">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="n">kittens</span><span class="p">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-</code></pre></div><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"http://example.com/api/kittens/2"</span> <span class="se">\</span>
-  <span class="nt">-X</span> DELETE <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Authorization: meowmeowmeow"</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="kd">const</span> <span class="nx">kittn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">kittn</span><span class="dl">"</span><span class="p">);</span>
+`GET http://example.com/kittens/<ID>`
 
-<span class="kd">let</span> <span class="nx">api</span> <span class="o">=</span> <span class="nx">kittn</span><span class="p">.</span><span class="nx">authorize</span><span class="p">(</span><span class="dl">"</span><span class="s2">meowmeowmeow</span><span class="dl">"</span><span class="p">);</span>
-<span class="kd">let</span> <span class="nx">max</span> <span class="o">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">kittens</span><span class="p">.</span><span class="k">delete</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
-</code></pre></div>
-<blockquote>
-<p>The above command returns JSON structured like this:</p>
-</blockquote>
-<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"deleted"</span><span class="p">:</span><span class="w"> </span><span class="s2">":("</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
-<p>This endpoint deletes a specific kitten.</p>
-<h3 id='http-request-3'>HTTP Request</h3>
-<p><code>DELETE http://example.com/kittens/&lt;ID&gt;</code></p>
-<h3 id='url-parameters-2'>URL Parameters</h3>
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>ID</td>
-<td>The ID of the kitten to delete</td>
-</tr>
-</tbody></table>
+### URL Parameters
+
+| Parameter | Description                      |
+| --------- | -------------------------------- |
+| ID        | The ID of the kitten to retrieve |
+
+## Delete a Specific Kitten
+
+```ruby
+require 'kittn'
+
+api = Kittn::APIClient.authorize!('meowmeowmeow')
+api.kittens.delete(2)
+```
+
+```python
+import kittn
+
+api = kittn.authorize('meowmeowmeow')
+api.kittens.delete(2)
+```
+
+```shell
+curl "http://example.com/api/kittens/2" \
+  -X DELETE \
+  -H "Authorization: meowmeowmeow"
+```
+
+```javascript
+const kittn = require("kittn");
+
+let api = kittn.authorize("meowmeowmeow");
+let max = api.kittens.delete(2);
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+  "id": 2,
+  "deleted": ":("
+}
+```
+
+This endpoint deletes a specific kitten.
+
+### HTTP Request
+
+`DELETE http://example.com/kittens/<ID>`
+
+### URL Parameters
+
+| Parameter | Description                    |
+| --------- | ------------------------------ |
+| ID        | The ID of the kitten to delete | -->
 <h1 id='errors'>Errors</h1>
 <aside class="notice">
 This error section is stored in a separate file in <code>includes/_errors.md</code>. Slate allows you to optionally separate out your docs into many files...just save them to the <code>includes</code> folder and add them to the top of your <code>index.md</code>'s frontmatter. Files are included in the order listed.
@@ -584,8 +770,6 @@ This error section is stored in a separate file in <code>includes/_errors.md</co
       </div>
       <div class="dark-box">
           <div class="lang-selector">
-                <a href="#" data-language-name="shell">shell</a>
-                <a href="#" data-language-name="ruby">ruby</a>
                 <a href="#" data-language-name="python">python</a>
                 <a href="#" data-language-name="javascript">javascript</a>
           </div>
