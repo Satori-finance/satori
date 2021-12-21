@@ -14,7 +14,7 @@ code_clipboard: true
 
 meta:
   - name: description
-    content: Documentation for the Kittn API
+    content: Documentation for Satori Perpetual Protocol
 ---
 
 # Introduction
@@ -37,8 +37,11 @@ When the market volatility >= 2%/minute, the user cannot open a position for 20 
 
 ### Transfer out restrictions
 
-Users are not allowed to transfer out their account balance when the margin rate of their position <= the alert margin rate.
-Transferable amount = available balance / 105%.
+Users are not allowed to transfer out their account balance when the margin rate of their position is less than the alert margin rate.
+
+<aside class="formula">
+  Transferable amount = available balance / 105%.
+</aside>
 
 ## Liquidations
 
@@ -50,7 +53,8 @@ The platform will calculate the risk factor of position burst, when the risk val
 
 <aside class="formula">
   <code>
-    risk of blow-out factor = maintenance margin / (available balance + position margin) \* 100%.
+    risk of blow-out factor =
+      maintenance margin / (available balance + position margin) * 100%.
   </code>
 </aside>
 
@@ -72,29 +76,33 @@ When a large position burst event occurs in the trading market, the large positi
 
 ### ADL trigger description
 
-When an investor is forced to close a position, their remaining positions will be taken over by the forced liquidation system. If the force close position is not able to be closed out in the market and when the price reaches the bust price and the insurance is not sufficient to cover it, the ADL system will reduce the position for traders holding positions in the opposite direction. It essentially allows the profitable to share the risk of those who have blown their positions.
+When a user is liquidated, their remaining positions will be taken over by the forced liquidation system. If the liquidation cannot be filled by the time we reach the bankruptcy price and the insurance is insufficient to cover it, the ADL system will automatically deleverage traders holding positions in the opposite direction.
 
-The automatic position reduction strategy is triggered when 50% of the risk reserve is still insufficient to close out a position based on the bankruptcy price of the forced liquidation position. The ADL ranking is based on the profit/loss of the position and the effective leverage used, i.e., the higher the profit and the more leverage used the higher the ranking. The highest ranked trader in the system will be selected first by the Auto-Reduction system.
+The ADL will deleverage traders in descending order of profit and leverage, i.e. the higher the profit and the more leverage used the higher the ranking.
 
 Traders can view their priority ranking for automatic position reduction via the “ADL Ranking” indicator, like the chart below. The Auto-Reduction will close and reduce positions based on the bankruptcy price of the forced liquidation position. If a user's position is automatically reduced, they will receive an SMS or email notification and the floating profit of the position will be converted to a real profit. The rule for the number of positions to be reduced: after the first user's position in line has been fully reduced, the second position will continue to be reduced and so on.
 
 ### ADL ranking calculation method
 
 <aside class="formula">
-  <code>
-    Ranking = % profit \* effective leverage (if profit, i.e. % profit > 0) = % profit / effective leverage (if loss, i.e. % profit < 0)
-  </code>
+    <code>
+    Ranking =
+            % profit * effective leverage (if profit, i.e. % profit > 0)
+
+            OR
+
+            % profit / effective leverage (if loss, i.e. % profit < 0)
+    </code>
+
 </aside>
 
 Where:
 
-- `Effective leverage` is `abs(marker value) / (marker value - bankruptcy value)`
-
-- `Profit percentage` is `(mark value - average open value) / |average open value|`
-
-- `Marker value` is `value of position at marker price`
-- `Insolvency value` is `value of position at insolvency price`
-- `Average open value` is `value of position at average open price`
+- `Effective leverage` is `mark value / (mark value - bankruptcy value`
+- `% profit` is `(mark value - average open value) / average open value`
+- `Mark value` is the `value of position at mark price`
+- `Bankruptcy value` is the `value of position at bankruptcy price`
+- `Average open value` is the `value of position at average open price`
 
 ## Funding Costs
 
@@ -107,8 +115,9 @@ The funding fee is charged every 8 hours, at 4:00, 12:00 and 20:00 each day.
 The funding fee is calculated as follows:
 
 <aside class="formula">
-  <code>
-  Funding fee = value of position held * funding fee rate.
+<code>
+  Funding fee =
+    value of position held * funding fee rate
   </code>
 </aside>
 
@@ -119,28 +128,23 @@ The funding fee rate is comprised of two components: the interest rate and the p
 The premium is calculated as:
 
 <aside class="formula">
-<code>
-Premium = [Max(0, Impact Bid Price - Index Price) - Max(0, Index Price - Impact Ask Price)] / Price Index
+  <code>
+  Premium =
+    [Max(0, Impact Bid Price - Index Price) - Max(0, Index Price - Impact Ask Price)] /
+    Price Index
 </code>
+
 </aside>
 
 where the impact bid and impact ask prices refer to the average execution price for a market sell (bid) or market buy (ask) of the impact notational value.
 
-Altogether, the funding rate is calculated as:
+Altogether, the funding fee rate is calculated as:
 
 <aside class="formula">
-  <code>
-    Funding rate = Premium + Clamp(Interest Rate - Premium, a, b).
-  </code>
+    Funding fee rate = Premium + Clamp(Interest Rate - Premium, a, b)
 </aside>
 
-where for BTC, ETH, EOS, XRP, BCH, BSV, ETC, LTC, TRX,
-
-<aside class="formula">
-  <code>
-    a = -0.3%,b = 0.3%
-  </code>
-</aside>
+where for BTC, ETH, EOS, XRP, BCH, BSV, ETC, LTC, TRX, `a = -0.3%` and `b = 0.3%`
 
 The `Clamp` function `Clamp(x, min, max)`, returns `min` when `x < = min` and `max` when `x>= max`.
 
@@ -176,7 +180,15 @@ To ensure that the spot index price reasonably reflects the fair spot market pri
 
 We has also implemented logic to ensure that index fluctuations are within the normal range when there is a significant deviation from the price of a single exchange.
 
-If an exchange price deviates by more than 3% relative to the median price of all exchanges, that exchange price is calculated as median*0.97 or median*1.03.).
+If an exchange price deviates by more than 3% relative to the median price of all exchanges, that exchange price is calculated as:
+
+<aside class="formula">
+<code>
+median * 0.97
+OR
+median * 1.03
+</code>
+</aside>
 
 ## Price Oracles
 
@@ -196,13 +208,17 @@ In the event of a breakdown loss arising from a burst position, priority will be
 
 ### Price limits
 
-When a user chooses to buy, there is a maximum buy price and no buy order can be submitted above that price. The calculation formula is:
+When a user chooses to buy, there is a maximum buy price and no buy order can be submitted above that price. The formula is:
 
-Maximum Bid Price = Latest Price \* 101%
+<aside class="formula">
+Maximum Bid Price = Latest Price * 101%
+</aside>
 
 When a user selects to sell, there is a minimum sell price and no sell order can be submitted below that price. The formula is:
 
+<aside class="formula">
 Minimum Sell Price = Latest Price / 101%
+</aside>
 
 ### Time limits
 

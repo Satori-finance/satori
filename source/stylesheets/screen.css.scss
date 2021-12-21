@@ -518,8 +518,14 @@ body {
     }
 
     &.formula {
+      @extend %code-font;
       background-color: rgba(0, 0, 0, 0.05);
-      font-family: Consolas;
+
+      code {
+        background-color: transparent;
+        display: block;
+        white-space: pre-wrap;
+      }
     }
   }
 
