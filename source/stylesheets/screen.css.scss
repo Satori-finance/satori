@@ -516,6 +516,11 @@ body {
     &.success {
       background-color: $aside-success-bg;
     }
+
+    &.formula {
+      background-color: rgba(0, 0, 0, 0.05);
+      font-family: Consolas;
+    }
   }
 
   aside:before {
