@@ -25,15 +25,17 @@ Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized
 
 ## Margin
 
-### Early warning margin rate
+Satori enforces margin requirements for users -- an initial margin rate to open and size-up positions, and a maintenance margin rate to avoid liquidations. These margin rates are determined on a per-token-pair basis.
 
-It’s an early warning line for the margin rate of a user's position.
-Setting: pre-set early warning margin rate = underlying maintenance margin rate \* 200%.
+### Initial Margin
 
-### Restrictions on opening positions
+### Maintenance Margin
 
-If the user margin rate is sufficient to open a position, available margin >= new opening cost\*105% is required to open a successful order, subject to the actual transaction price; (subject to existing positions).
-When the market volatility >= 2%/minute, the user cannot open a position for 20 seconds; text message: the current market volatility is high, the risk is high, temporarily do not support opening a position.
+This margin requirement is calculated as follows:
+
+<aside class="formula">
+  Maintenance margin = new opening cost * 105%
+</aside>
 
 ### Transfer out restrictions
 
@@ -47,9 +49,7 @@ Users are not allowed to transfer out their account balance when the margin rate
 
 Accounts where the margin rate is less than or equal to the maintenance margin rate may be liquidated.
 
-When a position burst is about to be triggered, the platform will cancel all current open orders to release margin and maintain the position. A message will be displayed that the order has been successfully withdrawn and the open order has been cancelled to release margin.
-
-The platform will calculate the risk factor of position burst, when the risk value of burst reaches 70%, it will send a strong closing warning notice to the user by email or SMS. The early warning notice will be judged every hour and sent again after the mark is reached. SMS notifications will also be made when a burst position is actually triggered to be initiated.
+The platform will continuously calculate the risk factor of position burst:
 
 <aside class="formula">
   <code>
@@ -58,29 +58,33 @@ The platform will calculate the risk factor of position burst, when the risk val
   </code>
 </aside>
 
-If the maintenance margin requirement is not met after the cancellation of an outstanding order, this remaining position is taken over by the strong closing engine at the bankruptcy price (i.e., the price at which the equity in the user's account equals zero) and this bankruptcy price is not displayed on the K-line.
+When a position burst is about to be triggered, the platform will cancel all current open orders to release margin and maintain the position.
 
-The user's forced liquidation record can be seen directly in the history of commissions and transactions, where the transaction price is the bankruptcy price, not the forced liquidation price.
+If the maintenance margin requirement is still not met after the cancellation of an outstanding order, this remaining position is taken over by the strong closing engine at the bankruptcy price (i.e., the price at which the equity in the user's account equals zero).
+
+The user's forced liquidation record can be seen directly in the history of commissions and transactions. The price shown will be the bankruptcy price, not the forced liquidation price.
 
 After the system takes over the position, if the market price is better than the bankruptcy price, the order will be delegated to the market to be filled in a matchmaking manner as soon as possible.
 
-If a strongly closed position is not able to be closed in the market and when the price reaches the insolvency price and the premium is not sufficient to cover it, the ADL system will reduce the positions of investors holding positions in the opposite direction according to the ranking and notify the user by SMS or email.
+Upon forced liquidation, all the user's positions in all contracts will be forced to close. The loss of a user subject to forced liquidation is close to or equal to all the assets in his virtual contract account.
 
-User's loss on forced liquidation: all positions in all contracts will be forced to close. The loss of a user subject to forced liquidation is close to or equal to all the assets in his virtual contract account.
+## Contract Losses
 
-### Split orders for large position burst
+### Insurance Vault
 
-When a large position burst event occurs in the trading market, the large position order is split into a number of small sub-orders for separate pending sell orders. In practice, burst position splitting involves complex calculation and sequencing issues.
+When a user is liquidated, their remaining positions will be taken over by the forced liquidation system. If the liquidation cannot be filled by the time we reach the bankruptcy price, the loss will be covered by the insurance vault, a reserve maintained by the platform.
 
-## Automatic Deleverage System
+The main sources of the insurance vault are a percentage of the commission generated by the transaction, and the surplus of the burst position.
 
-### ADL trigger description
+### Automatic Deleverage System
 
-When a user is liquidated, their remaining positions will be taken over by the forced liquidation system. If the liquidation cannot be filled by the time we reach the bankruptcy price and the insurance is insufficient to cover it, the ADL system will automatically deleverage traders holding positions in the opposite direction.
+In the event that the insurance vault is insufficient to cover a liquidation loss, the Automatic Deleveraging System (ADL) will automatically deleverage traders holding positions in the opposite direction.
 
 The ADL will deleverage traders in descending order of profit and leverage, i.e. the higher the profit and the more leverage used the higher the ranking.
 
-Traders can view their priority ranking for automatic position reduction via the “ADL Ranking” indicator, like the chart below. The Auto-Reduction will close and reduce positions based on the bankruptcy price of the forced liquidation position. If a user's position is automatically reduced, they will receive an SMS or email notification and the floating profit of the position will be converted to a real profit. The rule for the number of positions to be reduced: after the first user's position in line has been fully reduced, the second position will continue to be reduced and so on.
+Traders can view their priority ranking for automatic position reduction via the “ADL Ranking” indicator in the UI.
+
+Positions will be reduced atomically: after the first user's position in line has been fully reduced, the second position will continue to be reduced and so on.
 
 ### ADL ranking calculation method
 
@@ -148,9 +152,11 @@ where for BTC, ETH, EOS, XRP, BCH, BSV, ETC, LTC, TRX, `a = -0.3%` and `b = 0.3%
 
 The `Clamp` function `Clamp(x, min, max)`, returns `min` when `x < = min` and `max` when `x>= max`.
 
-## Price Indices
+## Index Price
 
-To ensure that the spot index price reasonably reflects the fair spot market price of each coin, we calcualte the index price as a weighted average of prices from 3 or more mainstream exchanges.
+To ensure that the spot index price reasonably reflects the fair spot market price of each coin, we utilize the Chainlink API. The index price is equal to the median of the reported prices of the 15 independent Chainlink master nodes.
+
+In the event that the connection to Chainlink is lost, or Chainlink is down, we manually pull the spot indices from several mainstream exchanges and calculate the index price as a weighted average of the spot prices.
 
 #### BTC/USD
 
@@ -190,39 +196,9 @@ median * 1.03
 </code>
 </aside>
 
-## Price Oracles
+## Matchmaking
 
-The Oracle Price is equal to the median of the reported prices of the 15 independent Chainlink master nodes. It's used to calculate:
-
-- unrealised gains and losses.
-- estimated strong parity.
-- capital costs.
-
-## Insurance Vault
-
-The insurance vault is a reserve used by the platform to protect against the risk of position penetration, the main sources of which include a percentage of the commission generated by the transaction, and the surplus of the burst position.
-
-In the event of a breakdown loss arising from a burst position, priority will be given to using the insurance pool to cover the loss.
-
-## Price and Time Limits
-
-### Price limits
-
-When a user chooses to buy, there is a maximum buy price and no buy order can be submitted above that price. The formula is:
-
-<aside class="formula">
-Maximum Bid Price = Latest Price * 101%
-</aside>
-
-When a user selects to sell, there is a minimum sell price and no sell order can be submitted below that price. The formula is:
-
-<aside class="formula">
-Minimum Sell Price = Latest Price / 101%
-</aside>
-
-### Time limits
-
-A user may not place a closing order within 2 minutes of placing an opening order.
+Orders will be aggregated by price-time on a FIFO basis. A transaction happens if there is a buy order that has a price equal or greater than a sell order, or if there is a market order placed in one direction and orders exist in the opposing direction
 
 <!-- ```ruby
 require 'kittn'
