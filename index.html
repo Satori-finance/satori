@@ -335,6 +335,9 @@
                     <a href="#index-price" class="toc-h2 toc-link" data-title="Index Price">Index Price</a>
                   </li>
                   <li>
+                    <a href="#oracle-price" class="toc-h2 toc-link" data-title="Oracle Price">Oracle Price</a>
+                  </li>
+                  <li>
                     <a href="#matchmaking" class="toc-h2 toc-link" data-title="Matchmaking">Matchmaking</a>
                   </li>
               </ul>
@@ -353,8 +356,10 @@
 <p>Satori enforces margin requirements for users -- an initial margin reqirement to open and size-up positions, and a maintenance margin requirement to avoid liquidations. The margin requirements are calculated as follows:</p>
 
 <aside class="formula">
-  Initial Margin Requirement = abs(S × OP × I)
+<code>
+    Initial Margin Requirement = abs(S × OP × I)
   Maintenance Margin Requirement = abs(S × OP × M)
+  </code>
 </aside>
 
 <p>Where:</p>
@@ -501,9 +506,9 @@
 
 <p>The <code>Clamp</code> function <code>Clamp(x, min, max)</code>, returns <code>min</code> when <code>x &lt; = min</code> and <code>max</code> when <code>x&gt;= max</code>.</p>
 <h2 id='index-price'>Index Price</h2>
-<p>The index price generally refers to the price of the underlying asset on the spot market. To ensure that the spot index price reasonably reflects the fair spot market price of each coin, we utilize the Chainlink API. The index price is equal to the median of the reported prices of the 15 independent Chainlink master nodes.</p>
+<p>The <code>Index Price</code> refers to the price of the underlying asset on the spot market. It&#39;s aggregate price based off price data from multiple exchanges and is used to trigger stop orders.</p>
 
-<p>In the event that the connection to Chainlink is lost, or Chainlink is down, we manually pull the spot indices from several mainstream exchanges and calculate the index price as a weighted average of the spot prices.</p>
+<p>The exchanges we aggregate from are as follows for each currency pair:</p>
 <h4 id='btc-usd'>BTC/USD</h4>
 <p><code>Okex</code>
 <code>Binance</code>
@@ -523,17 +528,15 @@
 <code>Coinbase</code>
 <code>Bitstamp</code></p>
 
-<p>We has also implemented logic to ensure that index fluctuations are within the normal range when there is a significant deviation from the price of a single exchange.</p>
+<p>We have implemented logic to ensure that index fluctuations are within the normal range when there is a significant deviation from the price of a single exchange.</p>
 
-<p>If an exchange price deviates by more than 3% relative to the median price of all exchanges, that exchange price is calculated as:</p>
+<p>If an exchange price deviates by more than 3% relative to the median price of all exchanges, the weight that exchange is given will be reduced.</p>
+<h2 id='oracle-price'>Oracle Price</h2>
+<p>The <code>Oracle Price</code> is an aggregate price calculated using multiple on-chain price oracles. Oracle prices are used to determine collateralization and liquidations on Satori.</p>
 
-<aside class="formula">
-<code>
-median * 0.97
-OR
-median * 1.03
-</code>
-</aside>
+<p>Since the oracle price is also an aggregate price, it offers similar protection from flash crashes as the index price does.</p>
+
+<p>For the Alpha launch, Satori runs its own oracle nodes on Layer 2.</p>
 <h2 id='matchmaking'>Matchmaking</h2>
 <p>Orders will be aggregated by price-time on a FIFO basis. A transaction happens if there is a buy order that has a price equal or greater than a sell order, or if there is a market order placed in one direction and orders exist in the opposing direction</p>
 
