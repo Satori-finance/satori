@@ -170,7 +170,7 @@ The `Clamp` function `Clamp(x, min, max)`, returns `min` when `x < = min` and `m
 
 ## Index Price
 
-The `Index Price` refers to the price of the underlying asset on the spot market. It's aggregate price based off price data from multiple exchanges and is used to trigger stop orders.
+The `Index Price` refers to the price of the underlying asset on the spot market. It's an aggregate price based off price data from multiple exchanges and is used to trigger stop orders.
 
 The exchanges we aggregate from are as follows for each currency pair:
 
