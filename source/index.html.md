@@ -154,9 +154,9 @@ The `Clamp` function `Clamp(x, min, max)`, returns `min` when `x < = min` and `m
 
 ## Index Price
 
-To ensure that the spot index price reasonably reflects the fair spot market price of each coin, we utilize the Chainlink API. The index price is equal to the median of the reported prices of the 15 independent Chainlink master nodes.
+The `Index Price` refers to the price of the underlying asset on the spot market. It's aggregate price based off price data from multiple exchanges and is used to trigger stop orders.
 
-In the event that the connection to Chainlink is lost, or Chainlink is down, we manually pull the spot indices from several mainstream exchanges and calculate the index price as a weighted average of the spot prices.
+The exchanges we aggregate from are as follows for each currency pair:
 
 #### BTC/USD
 
@@ -184,17 +184,17 @@ In the event that the connection to Chainlink is lost, or Chainlink is down, we 
 `Coinbase`
 `Bitstamp`
 
-We has also implemented logic to ensure that index fluctuations are within the normal range when there is a significant deviation from the price of a single exchange.
+We have implemented logic to ensure that index fluctuations are within the normal range when there is a significant deviation from the price of a single exchange.
 
-If an exchange price deviates by more than 3% relative to the median price of all exchanges, that exchange price is calculated as:
+If an exchange price deviates by more than 3% relative to the median price of all exchanges, the weight that exchange is given will be reduced.
 
-<aside class="formula">
-<code>
-median * 0.97
-OR
-median * 1.03
-</code>
-</aside>
+## Oracle Price
+
+The `Oracle Price` is an aggregate price calculated using multiple on-chain price oracles. Oracle prices are used to determine collateralization and liquidations on Satori.
+
+Since the oracle price is also an aggregate price, it offers similar protection from flash crashes as the index price does.
+
+For the Alpha launch, Satori runs its own oracle nodes on Layer 2.
 
 ## Matchmaking
 
