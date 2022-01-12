@@ -350,13 +350,54 @@
         <h1 id='introduction'>Introduction</h1>
 <p>Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized financial derivatives platform built on Polkadot. It features a hybrid of orderbook and AMM models to provide comprehensive exposure to a wide range of assets, and an “off-chain aggregation and on-chain settlement” design that combines the security and transparency of a decentralized exchange, with the speed and usability of a centralized exchange.</p>
 <h1 id='perpetual-contract-concepts'>Perpetual Contract Concepts</h1><h2 id='margin'>Margin</h2>
-<p>Satori enforces margin requirements for users -- an initial margin rate to open and size-up positions, and a maintenance margin rate to avoid liquidations. These margin rates are determined on a per-token-pair basis.</p>
-<h3 id='initial-margin'>Initial Margin</h3><h3 id='maintenance-margin'>Maintenance Margin</h3>
-<p>This margin requirement is calculated as follows:</p>
+<p>Satori enforces margin requirements for users -- an initial margin reqirement to open and size-up positions, and a maintenance margin requirement to avoid liquidations. The margin requirements are calculated as follows:</p>
 
 <aside class="formula">
-  Maintenance margin = new opening cost * 105%
+  Initial Margin Requirement = abs(S × OP × I)
+  Maintenance Margin Requirement = abs(S × OP × M)
 </aside>
+
+<p>Where:</p>
+
+<ul>
+<li><code>S</code> is the size of the position</li>
+<li><code>OP</code> is the oracle price for the market</li>
+<li><code>I</code> is the initial margin rate for the market</li>
+<li><code>M</code> is the maintenance margin rate for the market</li>
+</ul>
+
+<p>The margin rates are determined on a per-token-pair basis:</p>
+
+<table><thead>
+<tr>
+<th>Token Pair</th>
+<th>Initial Margin Rate</th>
+<th>Maintenance Margin Rate</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>BTC/USD</td>
+<td>4%</td>
+<td>3%</td>
+</tr>
+<tr>
+<td>ETH/USD</td>
+<td>4%</td>
+<td>3%</td>
+</tr>
+<tr>
+<td>LTC/USD</td>
+<td>10%</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>XRP/USD</td>
+<td>10%</td>
+<td>5%</td>
+</tr>
+</tbody></table>
+
+<p>All collateral is held as USDC, and the quote asset for all perpetual markets is USDC. Satori uses cross-margining by default, meaning the margin is shared among all of the user&#39;s positions.</p>
 <h3 id='transfer-out-restrictions'>Transfer out restrictions</h3>
 <p>Users are not allowed to transfer out their account balance when the margin rate of their position is less than the alert margin rate.</p>
 
@@ -412,14 +453,15 @@
 <p>Where:</p>
 
 <ul>
-<li><code>Effective leverage</code> is <code>mark value / (mark value - bankruptcy value</code></li>
+<li><code>Effective leverage</code> is <code>mark value / (mark value - bankruptcy value)</code></li>
 <li><code>% profit</code> is <code>(mark value - average open value) / average open value</code></li>
-<li><code>Mark value</code> is the <code>value of position at mark price</code></li>
-<li><code>Bankruptcy value</code> is the <code>value of position at bankruptcy price</code></li>
-<li><code>Average open value</code> is the <code>value of position at average open price</code></li>
+<li><code>Mark value</code> is the value of the position at mark price</li>
+<li><code>Mark price</code> is the current price for the perpetual contracts of the asset you are viewing</li>
+<li><code>Bankruptcy value</code> is the value of position at the bankruptcy price</li>
+<li><code>Average open value</code> is the the value of position at average open price</li>
 </ul>
 <h2 id='funding-costs'>Funding Costs</h2>
-<p>We anchor the market price of perpetual contracts to the spot price through a funding fee mechanism.</p>
+<p>We anchor the price of perpetual contracts to the spot index price through a funding fee mechanism.</p>
 
 <p>Long positions pay short positions when the market is bullish; short positions pay long positions when the market is bearish.</p>
 
@@ -442,7 +484,7 @@
   <code>
   Premium =
     [Max(0, Impact Bid Price - Index Price) - Max(0, Index Price - Impact Ask Price)] /
-    Price Index
+    Index Price
 </code>
 
 </aside>
@@ -459,7 +501,7 @@
 
 <p>The <code>Clamp</code> function <code>Clamp(x, min, max)</code>, returns <code>min</code> when <code>x &lt; = min</code> and <code>max</code> when <code>x&gt;= max</code>.</p>
 <h2 id='index-price'>Index Price</h2>
-<p>To ensure that the spot index price reasonably reflects the fair spot market price of each coin, we utilize the Chainlink API. The index price is equal to the median of the reported prices of the 15 independent Chainlink master nodes.</p>
+<p>The index price generally refers to the price of the underlying asset on the spot market. To ensure that the spot index price reasonably reflects the fair spot market price of each coin, we utilize the Chainlink API. The index price is equal to the median of the reported prices of the 15 independent Chainlink master nodes.</p>
 
 <p>In the event that the connection to Chainlink is lost, or Chainlink is down, we manually pull the spot indices from several mainstream exchanges and calculate the index price as a weighted average of the spot prices.</p>
 <h4 id='btc-usd'>BTC/USD</h4>
