@@ -28,8 +28,10 @@ Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized
 Satori enforces margin requirements for users -- an initial margin reqirement to open and size-up positions, and a maintenance margin requirement to avoid liquidations. The margin requirements are calculated as follows:
 
 <aside class="formula">
-  Initial Margin Requirement = abs(S × OP × I)
+<code>
+    Initial Margin Requirement = abs(S × OP × I)
   Maintenance Margin Requirement = abs(S × OP × M)
+  </code>
 </aside>
 
 Where:
