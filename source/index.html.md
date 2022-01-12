@@ -25,17 +25,30 @@ Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized
 
 ## Margin
 
-Satori enforces margin requirements for users -- an initial margin rate to open and size-up positions, and a maintenance margin rate to avoid liquidations. These margin rates are determined on a per-token-pair basis.
-
-### Initial Margin
-
-### Maintenance Margin
-
-This margin requirement is calculated as follows:
+Satori enforces margin requirements for users -- an initial margin reqirement to open and size-up positions, and a maintenance margin requirement to avoid liquidations. The margin requirements are calculated as follows:
 
 <aside class="formula">
-  Maintenance margin = new opening cost * 105%
+  Initial Margin Requirement = abs(S × OP × I)
+  Maintenance Margin Requirement = abs(S × OP × M)
 </aside>
+
+Where:
+
+- `S` is the size of the position
+- `OP` is the oracle price for the market
+- `I` is the initial margin rate for the market
+- `M` is the maintenance margin rate for the market
+
+The margin rates are determined on a per-token-pair basis:
+
+| Token Pair | Initial Margin Rate | Maintenance Margin Rate |
+| ---------- | ------------------- | ----------------------- |
+| BTC/USD    | 4%                  | 3%                      |
+| ETH/USD    | 4%                  | 3%                      |
+| LTC/USD    | 10%                 | 5%                      |
+| XRP/USD    | 10%                 | 5%                      |
+
+All collateral is held as USDC, and the quote asset for all perpetual markets is USDC. Satori uses cross-margining by default, meaning the margin is shared among all of the user's positions.
 
 ### Transfer out restrictions
 
@@ -102,15 +115,16 @@ Positions will be reduced atomically: after the first user's position in line ha
 
 Where:
 
-- `Effective leverage` is `mark value / (mark value - bankruptcy value`
+- `Effective leverage` is `mark value / (mark value - bankruptcy value)`
 - `% profit` is `(mark value - average open value) / average open value`
-- `Mark value` is the `value of position at mark price`
-- `Bankruptcy value` is the `value of position at bankruptcy price`
-- `Average open value` is the `value of position at average open price`
+- `Mark value` is the value of the position at mark price
+- `Mark price` is the current price for the perpetual contracts of the asset you are viewing
+- `Bankruptcy value` is the value of position at the bankruptcy price
+- `Average open value` is the the value of position at average open price
 
 ## Funding Costs
 
-We anchor the market price of perpetual contracts to the spot price through a funding fee mechanism.
+We anchor the price of perpetual contracts to the spot index price through a funding fee mechanism.
 
 Long positions pay short positions when the market is bullish; short positions pay long positions when the market is bearish.
 
@@ -135,7 +149,7 @@ The premium is calculated as:
   <code>
   Premium =
     [Max(0, Impact Bid Price - Index Price) - Max(0, Index Price - Impact Ask Price)] /
-    Price Index
+    Index Price
 </code>
 
 </aside>
@@ -154,7 +168,7 @@ The `Clamp` function `Clamp(x, min, max)`, returns `min` when `x < = min` and `m
 
 ## Index Price
 
-To ensure that the spot index price reasonably reflects the fair spot market price of each coin, we utilize the Chainlink API. The index price is equal to the median of the reported prices of the 15 independent Chainlink master nodes.
+The index price generally refers to the price of the underlying asset on the spot market. To ensure that the spot index price reasonably reflects the fair spot market price of each coin, we utilize the Chainlink API. The index price is equal to the median of the reported prices of the 15 independent Chainlink master nodes.
 
 In the event that the connection to Chainlink is lost, or Chainlink is down, we manually pull the spot indices from several mainstream exchanges and calculate the index price as a weighted average of the spot prices.
 
