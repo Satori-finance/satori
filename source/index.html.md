@@ -135,9 +135,7 @@ The funding fee is charged every hour.
 The funding fee is calculated as follows:
 
 <aside class="formula">
-<code>
   Funding fee = notional value of position held * funding fee rate
-  </code>
 </aside>
 
 ### Funding Fee Rate Calculation
@@ -149,15 +147,13 @@ The interest rate is currently set to `0.03%` per day.
 The premium is calculated using trailing 1 hour TWAPs, sampled once every second.
 
 <aside class="formula">
-  <code>
   Premium = (TWAP(contract_price) - TWAP(index_price)) / TWAP(index_price)
-</code>
 </aside>
 
 Altogether, the funding fee rate is calculated as:
 
 <aside class="formula">
-    Funding fee rate = Premium + Interest Rate
+    Funding fee rate = (Premium + Interest Rate) / 24
 </aside>
 
 ## Index Price
