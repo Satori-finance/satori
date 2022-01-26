@@ -130,14 +130,13 @@ We anchor the price of perpetual contracts to the spot index price through a fun
 
 Long positions pay short positions when the market is bullish; short positions pay long positions when the market is bearish.
 
-The funding fee is charged every 8 hours, at 4:00, 12:00 and 20:00 each day.
+The funding fee is charged every hour.
 
 The funding fee is calculated as follows:
 
 <aside class="formula">
 <code>
-  Funding fee =
-    value of position held * funding fee rate
+  Funding fee = notional value of position held * funding fee rate
   </code>
 </aside>
 
@@ -145,28 +144,21 @@ The funding fee is calculated as follows:
 
 The funding fee rate is comprised of two components: the interest rate and the premium.
 
-The premium is calculated as:
+The interest rate is currently set to `0.03%` per day.
+
+The premium is calculated using trailing 1 hour TWAPs, sampled once every second.
 
 <aside class="formula">
   <code>
-  Premium =
-    [Max(0, Impact Bid Price - Index Price) - Max(0, Index Price - Impact Ask Price)] /
-    Index Price
+  Premium = (TWAP(contract_price) - TWAP(index_price)) / TWAP(index_price)
 </code>
-
 </aside>
-
-where the impact bid and impact ask prices refer to the average execution price for a market sell (bid) or market buy (ask) of the impact notational value.
 
 Altogether, the funding fee rate is calculated as:
 
 <aside class="formula">
-    Funding fee rate = Premium + Clamp(Interest Rate - Premium, a, b)
+    Funding fee rate = Premium + Interest Rate
 </aside>
-
-where for BTC, ETH, EOS, XRP, BCH, BSV, ETC, LTC, TRX, `a = -0.3%` and `b = 0.3%`
-
-The `Clamp` function `Clamp(x, min, max)`, returns `min` when `x < = min` and `max` when `x>= max`.
 
 ## Index Price
 
