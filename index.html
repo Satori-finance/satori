@@ -470,41 +470,33 @@
 
 <p>Long positions pay short positions when the market is bullish; short positions pay long positions when the market is bearish.</p>
 
-<p>The funding fee is charged every 8 hours, at 4:00, 12:00 and 20:00 each day.</p>
+<p>The funding fee is charged every hour.</p>
 
 <p>The funding fee is calculated as follows:</p>
 
 <aside class="formula">
 <code>
-  Funding fee =
-    value of position held * funding fee rate
+  Funding fee = notional value of position held * funding fee rate
   </code>
 </aside>
 <h3 id='funding-fee-rate-calculation'>Funding Fee Rate Calculation</h3>
 <p>The funding fee rate is comprised of two components: the interest rate and the premium.</p>
 
-<p>The premium is calculated as:</p>
+<p>The interest rate is currently set to <code>0.03%</code> per day.</p>
+
+<p>The premium is calculated using trailing 1 hour TWAPs, sampled once every second.</p>
 
 <aside class="formula">
   <code>
-  Premium =
-    [Max(0, Impact Bid Price - Index Price) - Max(0, Index Price - Impact Ask Price)] /
-    Index Price
+  Premium = (TWAP(contract_price) - TWAP(index_price)) / TWAP(index_price)
 </code>
-
 </aside>
-
-<p>where the impact bid and impact ask prices refer to the average execution price for a market sell (bid) or market buy (ask) of the impact notational value.</p>
 
 <p>Altogether, the funding fee rate is calculated as:</p>
 
 <aside class="formula">
-    Funding fee rate = Premium + Clamp(Interest Rate - Premium, a, b)
+    Funding fee rate = Premium + Interest Rate
 </aside>
-
-<p>where for BTC, ETH, EOS, XRP, BCH, BSV, ETC, LTC, TRX, <code>a = -0.3%</code> and <code>b = 0.3%</code></p>
-
-<p>The <code>Clamp</code> function <code>Clamp(x, min, max)</code>, returns <code>min</code> when <code>x &lt; = min</code> and <code>max</code> when <code>x&gt;= max</code>.</p>
 <h2 id='index-price'>Index Price</h2>
 <p>The <code>Index Price</code> refers to the price of the underlying asset on the spot market. It&#39;s an aggregate price based off price data from multiple exchanges and is used to trigger stop orders.</p>
 
