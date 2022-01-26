@@ -475,9 +475,7 @@
 <p>The funding fee is calculated as follows:</p>
 
 <aside class="formula">
-<code>
   Funding fee = notional value of position held * funding fee rate
-  </code>
 </aside>
 <h3 id='funding-fee-rate-calculation'>Funding Fee Rate Calculation</h3>
 <p>The funding fee rate is comprised of two components: the interest rate and the premium.</p>
@@ -487,15 +485,13 @@
 <p>The premium is calculated using trailing 1 hour TWAPs, sampled once every second.</p>
 
 <aside class="formula">
-  <code>
   Premium = (TWAP(contract_price) - TWAP(index_price)) / TWAP(index_price)
-</code>
 </aside>
 
 <p>Altogether, the funding fee rate is calculated as:</p>
 
 <aside class="formula">
-    Funding fee rate = Premium + Interest Rate
+    Funding fee rate = (Premium + Interest Rate) / 24
 </aside>
 <h2 id='index-price'>Index Price</h2>
 <p>The <code>Index Price</code> refers to the price of the underlying asset on the spot market. It&#39;s an aggregate price based off price data from multiple exchanges and is used to trigger stop orders.</p>
