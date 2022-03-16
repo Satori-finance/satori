@@ -31,8 +31,10 @@ Satori offers the ability to trade quanto futures in DOT or synthetic DOT. This 
   <code>
     Initial Margin in DOT =
       Initial Margin Requirement * DOT Multiplier * Average Opening Price * Number of Contracts
+
     PNL of Closing Long Position =
       DOT Multiplier * (Average Closing Price - Average Opening Price) * Number of Contracts
+
     PNL of Closing Short Position =
       -1 * DOT Multiplier * (Average Closing Price - Average Opening Price) * Number of Contracts
   </code>
@@ -89,6 +91,7 @@ The closing price is determined by:
   <code>
     Closing Price (long) =
       Average Opening Price * (1 + Maintenance Margin Rate) - (Position Margin / Number of Contracts)
+
     Closing Price (short) =
       Average Opening Price * (1 - Maintenance Margin Rate) + (Position Margin / Number of Contracts)
   </code>
