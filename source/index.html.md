@@ -6,7 +6,7 @@ language_tabs: # must be one of https://git.io/vQNgJ
   - javascript
 
 includes:
-  - errors
+#  - errors
 
 search: true
 
@@ -21,83 +21,70 @@ meta:
 
 Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized financial derivatives platform built on Polkadot. It features a hybrid of orderbook and AMM models to provide comprehensive exposure to a wide range of assets, and an “off-chain aggregation and on-chain settlement” design that combines the security and transparency of a decentralized exchange, with the speed and usability of a centralized exchange.
 
-# Perpetual Contract Concepts
+# Perpetuals
 
 ## Margin
 
-Satori enforces margin requirements for users -- an initial margin reqirement to open and size-up positions, and a maintenance margin requirement to avoid liquidations. The margin requirements are calculated as follows:
+Satori enforces margin requirements for users -- an initial margin requirement to open and size-up positions, and a maintenance margin requirement to avoid liquidations. All positions are set to isolated margin, which means margin is assigned by specific positions. Margin can be added and removed at will above the initial margin.
 
-<aside class="formula">
-  <code>
-    Initial Margin Requirement = abs(S × OP × I)
-    Maintenance Margin Requirement = abs(S × OP × M)
-  </code>
-</aside>
+### Initial Margin
 
-Where:
+The maximum supported leverage is 20x, so least 5% of the position value must be used as collateral upon opening a new position.
 
-- `S` is the size of the position
-- `OP` is the oracle price for the market
-- `I` is the initial margin rate for the market
-- `M` is the maintenance margin rate for the market
+For example, with $100 of collateral, the maximum position size that can be put on is:
 
-The margin rates are determined on a per-token-pair basis:
+| Leverage | Position Size |
+| -------- | ------------- |
+| 5x       | $500          |
+| 10x      | $1,000        |
+| 20x      | $2,000        |
 
-| Token Pair | Initial Margin Rate | Maintenance Margin Rate |
-| ---------- | ------------------- | ----------------------- |
-| BTC/USD    | 4%                  | 3%                      |
-| ETH/USD    | 4%                  | 3%                      |
-| LTC/USD    | 10%                 | 5%                      |
-| XRP/USD    | 10%                 | 5%                      |
+### Maintenance Margin
 
-All collateral is held as USDC, and the quote asset for all perpetual markets is USDC. Satori uses cross-margining by default, meaning the margin is shared among all of the user's positions.
+If the value of a position falls below the maintenance margin level, it may be automatically closed out by the liquidation engine.
 
-### Transfer out restrictions
+The maintenance margin rates are determined on a per-token-pair basis:
 
-Users are not allowed to transfer out their account balance when the margin rate of their position is less than the alert margin rate.
+| Token | Maintenance Margin Rate |
+| ----- | ----------------------- |
+| BTC   | 0.5%                    |
+| ETH   | 0.5%                    |
+| DOT   | 0.5%                    |
 
-<aside class="formula">
-  Transferable amount = available balance / 105%.
-</aside>
+For example, a long leveraged position in BTC-USDT may be liquidated after the mark price dips below 0.5% above the bankruptcy price.
+
+All collateral is held as DOT, and the denominated asset for all perpetual markets is USDT.
 
 ## Liquidations
 
-Accounts where the margin rate is less than or equal to the maintenance margin rate may be liquidated.
+Positions where the margin rate is less than or equal to the maintenance margin rate may be liquidated.
 
-The platform will continuously calculate the risk factor of position burst:
+### Closing Price
+
+The closing price is determined by:
 
 <aside class="formula">
   <code>
-    risk of blow-out factor =
-      maintenance margin / (available balance + position margin) * 100%.
+    Closing Price (long) = Average Opening Price * (1 + Maintenance Margin Rate) - (Position Margin / Number of Contracts)
+    Closing Price (short) = Average Opening Price * (1 - Maintenance Margin Rate) + (Position Margin / Number of Contracts)
   </code>
 </aside>
 
-When a position burst is about to be triggered, the platform will cancel all current open orders to release margin and maintain the position.
-
-If the maintenance margin requirement is still not met after the cancellation of an outstanding order, this remaining position is taken over by the strong closing engine at the bankruptcy price (i.e., the price at which the equity in the user's account equals zero).
-
-The user's forced liquidation record can be seen directly in the history of commissions and transactions. The price shown will be the bankruptcy price, not the forced liquidation price.
-
-After the system takes over the position, if the market price is better than the bankruptcy price, the order will be delegated to the market to be filled in a matchmaking manner as soon as possible.
-
-Upon forced liquidation, all the user's positions in all contracts will be forced to close. The loss of a user subject to forced liquidation is close to or equal to all the assets in his virtual contract account.
-
-## Contract Losses
+If the position is liquidated at a price better than the bankruptcy price, then the funds will be added to the insurance vault. Otherwise, if the position is liquidated at a worse price, then the insurance vault funds will be used to cover the loss due to the position. If that insurance vault is insufficient, then the [auto-deleveraging system](#automatic-deleveraging-system) will reduce the positions of investors that have positions in the opposite direction.
 
 ### Insurance Vault
 
-When a user is liquidated, their remaining positions will be taken over by the forced liquidation system. If the liquidation cannot be filled by the time we reach the bankruptcy price, the loss will be covered by the insurance vault, a reserve maintained by the platform.
+When a position is liquidated, it will be taken over by the forced liquidation system. If the liquidation cannot be fulfilled by the time the perpetual reaches the bankruptcy price, the loss will be covered by the insurance vault, a reserve maintained by the platform.
 
-The main sources of the insurance vault are a percentage of the commission generated by the transaction, and the surplus of the burst position.
+The insurance vault is currently seeded and maintained by the Satori team, and will eventually be funded through trading fees.
 
-### Automatic Deleverage System
+### Automatic Deleveraging System
 
 In the event that the insurance vault is insufficient to cover a liquidation loss, the Automatic Deleveraging System (ADL) will automatically deleverage traders holding positions in the opposite direction.
 
 The ADL will deleverage traders in descending order of profit and leverage, i.e. the higher the profit and the more leverage used the higher the ranking.
 
-Traders can view their priority ranking for automatic position reduction via the “ADL Ranking” indicator in the UI.
+Traders can view their priority ranking for automatic position reduction via the “ADL Ranking” indicator in the UI. Each light represents a 20% priority ranking, and when all lights are on, the position may be reduced in the event of a forced liquidation.
 
 Positions will be reduced atomically: after the first user's position in line has been fully reduced, the second position will continue to be reduced and so on.
 
@@ -119,74 +106,76 @@ Where:
 
 - `Effective leverage` is `mark value / (mark value - bankruptcy value)`
 - `% profit` is `(mark value - average open value) / average open value`
-- `Mark value` is the value of the position at mark price
-- `Mark price` is the current price for the perpetual contracts of the asset you are viewing
+- `Mark value` is the value of the position at the mark price
 - `Bankruptcy value` is the value of position at the bankruptcy price
 - `Average open value` is the the value of position at average open price
 
 ## Funding Costs
 
-We anchor the price of perpetual contracts to the spot index price through a funding fee mechanism.
+We anchor the price of perpetual contracts to the spot index price through a funding fee mechanism. Long positions pay short positions when the future is trading at a premium; short positions pay long positions when the future is trading below. The platform does not receive any of the fees.
 
-Long positions pay short positions when the market is bullish; short positions pay long positions when the market is bearish.
-
-The funding fee is charged every hour.
-
-The funding fee is calculated as follows:
+The funding fee is charged every hour, and calculated as follows:
 
 <aside class="formula">
-  Funding fee = notional value of position held * funding fee rate
+  Funding fee = position size * oracle price * funding fee rate
 </aside>
 
 ### Funding Fee Rate Calculation
 
-The funding fee rate is comprised of two components: the interest rate and the premium.
+The funding fee rate is comprised of two components: the interest rate and the premium index.
 
 The interest rate is currently set to `0.03%` per day.
 
-The premium is calculated using trailing 1 hour TWAPs, sampled once every second.
+The premium index is calculated for each market, per minute (at random points in that minute) using the following formula:
 
 <aside class="formula">
-  Premium = (TWAP(contract_price) - TWAP(index_price)) / TWAP(index_price)
+  Premium Index = (max(0, B - I) - max(0, I - A)) / I
 </aside>
+
+Where:
+
+- `B` is the `impact bid price`, or the average execution price to close out a long position of impact notional value through a market sell
+- `A` is the `impact ask price`, or the average execution price to close out a short position of impact notional value through a market buy
+- `I` is the spot index price
+- `Impact Notional Value` is set to 800 USDT / Initial Margin Ratio of the Market
+
+The total premium index for an hour is then the average of all premium indices calculated for that hour.
 
 Altogether, the funding fee rate is calculated as:
 
 <aside class="formula">
-    Funding fee rate = (Premium + Interest Rate) / 24
+    Funding Fee Rate = Premium Index + clamp(Interest Rate/24 - Premium Index, 0.05%, -0.05%)
 </aside>
+
+In other words, the funding fee ate will equal the hourly interest rate if the premium index is within 0.05% of the hourly interest rate.
+
+### Funding Fee Rate Cap
+
+The absolute value of the Funding Fee Rate is capped at 0.075%.
 
 ## Index Price
 
-The `Index Price` refers to the price of the underlying asset on the spot market. It's an aggregate price based off price data from multiple exchanges and is used to trigger stop orders.
+The `Index Price` refers to the price of the underlying asset on the spot market. It's an aggregate price based off price data from multiple exchanges.
 
-The exchanges we aggregate from are as follows for each currency pair:
+The exchanges we aggregate from are as follows for each market:
 
-#### BTC/USD
-
-`Okex`
-`Binance`
-`Coinbase`
-`Bitstamp`
-
-#### ETH/USD
+#### BTC-USDT
 
 `Okex`
 `Binance`
-`Coinbase`
-`Bitstamp`
+`Huobi`
 
-#### LTC/USD
-
-`Okex`
-`Coinbase`
-`Bitstamp`
-
-#### XRP/USD
+#### ETH-USDT
 
 `Okex`
-`Coinbase`
-`Bitstamp`
+`Binance`
+`Huobi`
+
+#### DOT-USDT
+
+`Okex`
+`Binance`
+`Huobi`
 
 We have implemented logic to ensure that index fluctuations are within the normal range when there is a significant deviation from the price of a single exchange.
 
