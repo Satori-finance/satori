@@ -322,6 +322,9 @@
             <a href="#perpetuals" class="toc-h1 toc-link" data-title="Perpetuals">Perpetuals</a>
               <ul class="toc-list-h2">
                   <li>
+                    <a href="#quanto-futures" class="toc-h2 toc-link" data-title="Quanto Futures">Quanto Futures</a>
+                  </li>
+                  <li>
                     <a href="#margin" class="toc-h2 toc-link" data-title="Margin">Margin</a>
                   </li>
                   <li>
@@ -348,7 +351,26 @@
       <div class="content">
         <h1 id='introduction'>Introduction</h1>
 <p>Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized financial derivatives platform built on Polkadot. It features a hybrid of orderbook and AMM models to provide comprehensive exposure to a wide range of assets, and an “off-chain aggregation and on-chain settlement” design that combines the security and transparency of a decentralized exchange, with the speed and usability of a centralized exchange.</p>
-<h1 id='perpetuals'>Perpetuals</h1><h2 id='margin'>Margin</h2>
+<h1 id='perpetuals'>Perpetuals</h1><h2 id='quanto-futures'>Quanto Futures</h2>
+<p>Satori offers the ability to trade quanto futures in DOT or synthetic DOT. This allows traders to speculate on trading pairs without holding either of the assets by setting a fixed multiplier between DOT and the contract. All margin, profit, and loss will be in DOT terms, using the following formulas.</p>
+
+<aside class="formula">
+  <code>
+    Initial Margin in DOT = Initial Margin Requirement * DOT Multiplier * Average Opening Price * Number of Contracts
+    PNL of Closing Long Position = DOT Multiplier * (Exit Price - Entry Price) * Number of Contracts
+    PNL of Closing Short Position = -1 * DOT Multiplier * (Exit Price - Entry Price) * Number of Contracts
+  </code>
+</aside>
+
+<p>Where:</p>
+
+<ul>
+<li><code>Initial Margin Requirement</code> is the % margin required for the trade; see <a href="#margin">margin</a> for more info</li>
+<li><code>DOT Multiplier</code> is the fixed multiplier set by Satori between the denominated asset of the trading pair and DOT</li>
+</ul>
+
+<p>For example, the BTC-USDT quanto futures contract on DOT has a fixed DOT multiplier of 0.05, which means that for every 1 USDT move in the BTC-USDT price, the contract pays out 0.05 DOT. Positions will make or lose DOT as the BTC/USDT exchange rate changes.</p>
+<h2 id='margin'>Margin</h2>
 <p>Satori enforces margin requirements for users -- an initial margin requirement to open and size-up positions, and a maintenance margin requirement to avoid liquidations. All positions are set to isolated margin, which means margin is assigned by specific positions. Margin can be added and removed at will above the initial margin.</p>
 <h3 id='initial-margin'>Initial Margin</h3>
 <p>The maximum supported leverage is 20x, so least 5% of the position value must be used as collateral upon opening a new position.</p>
@@ -444,10 +466,10 @@
 
 <ul>
 <li><code>Effective leverage</code> is <code>mark value / (mark value - bankruptcy value)</code></li>
-<li><code>% profit</code> is <code>(mark value - average open value) / average open value</code></li>
+<li><code>% profit</code> is <code>(mark value - average open value) / average opening value</code></li>
 <li><code>Mark value</code> is the value of the position at the mark price</li>
 <li><code>Bankruptcy value</code> is the value of position at the bankruptcy price</li>
-<li><code>Average open value</code> is the the value of position at average open price</li>
+<li><code>Average opening value</code> is the the value of position at average opening price</li>
 </ul>
 <h2 id='funding-costs'>Funding Costs</h2>
 <p>We anchor the price of perpetual contracts to the spot index price through a funding fee mechanism. Long positions pay short positions when the future is trading at a premium; short positions pay long positions when the future is trading below. The platform does not receive any of the fees.</p>
