@@ -25,19 +25,22 @@ Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized
 
 ## Quanto Futures
 
-Satori offers the ability to trade quanto futures in DOT or synthetic DOT. This allows traders to speculate on trading pairs without holding either of the assets by setting a fixed multiplier between DOT and the contract. All margin, profit, and loss will be in DOT terms, using the following formulas.
+Satori offers the ability to trade quanto futures in DOT or synthetic DOT. This allows traders to speculate on trading pairs without holding either of the assets by setting a fixed multiplier between DOT and the contract. All margin, profit, and loss will be in DOT terms, calculated using the following formulas:
 
 <aside class="formula">
   <code>
-    Initial Margin in DOT = Initial Margin Requirement * DOT Multiplier * Average Opening Price * Number of Contracts
-    PNL of Closing Long Position = DOT Multiplier * (Exit Price - Entry Price) * Number of Contracts
-    PNL of Closing Short Position = -1 * DOT Multiplier * (Exit Price - Entry Price) * Number of Contracts
+    Initial Margin in DOT =
+      Initial Margin Requirement * DOT Multiplier * Average Opening Price * Number of Contracts
+    PNL of Closing Long Position =
+      DOT Multiplier * (Average Closing Price - Average Opening Price) * Number of Contracts
+    PNL of Closing Short Position =
+      -1 * DOT Multiplier * (Average Closing Price - Average Opening Price) * Number of Contracts
   </code>
 </aside>
 
 Where:
 
-- `Initial Margin Requirement` is the % margin required for the trade; see [margin](#margin) for more info
+- `Initial Margin Requirement` is the % margin required to put on the position; see [margin](#margin) for more info
 - `DOT Multiplier` is the fixed multiplier set by Satori between the denominated asset of the trading pair and DOT
 
 For example, the BTC-USDT quanto futures contract on DOT has a fixed DOT multiplier of 0.05, which means that for every 1 USDT move in the BTC-USDT price, the contract pays out 0.05 DOT. Positions will make or lose DOT as the BTC/USDT exchange rate changes.
@@ -84,8 +87,10 @@ The closing price is determined by:
 
 <aside class="formula">
   <code>
-    Closing Price (long) = Average Opening Price * (1 + Maintenance Margin Rate) - (Position Margin / Number of Contracts)
-    Closing Price (short) = Average Opening Price * (1 - Maintenance Margin Rate) + (Position Margin / Number of Contracts)
+    Closing Price (long) =
+      Average Opening Price * (1 + Maintenance Margin Rate) - (Position Margin / Number of Contracts)
+    Closing Price (short) =
+      Average Opening Price * (1 - Maintenance Margin Rate) + (Position Margin / Number of Contracts)
   </code>
 </aside>
 
