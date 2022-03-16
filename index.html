@@ -352,20 +352,23 @@
         <h1 id='introduction'>Introduction</h1>
 <p>Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized financial derivatives platform built on Polkadot. It features a hybrid of orderbook and AMM models to provide comprehensive exposure to a wide range of assets, and an “off-chain aggregation and on-chain settlement” design that combines the security and transparency of a decentralized exchange, with the speed and usability of a centralized exchange.</p>
 <h1 id='perpetuals'>Perpetuals</h1><h2 id='quanto-futures'>Quanto Futures</h2>
-<p>Satori offers the ability to trade quanto futures in DOT or synthetic DOT. This allows traders to speculate on trading pairs without holding either of the assets by setting a fixed multiplier between DOT and the contract. All margin, profit, and loss will be in DOT terms, using the following formulas.</p>
+<p>Satori offers the ability to trade quanto futures in DOT or synthetic DOT. This allows traders to speculate on trading pairs without holding either of the assets by setting a fixed multiplier between DOT and the contract. All margin, profit, and loss will be in DOT terms, calculated using the following formulas:</p>
 
 <aside class="formula">
   <code>
-    Initial Margin in DOT = Initial Margin Requirement * DOT Multiplier * Average Opening Price * Number of Contracts
-    PNL of Closing Long Position = DOT Multiplier * (Exit Price - Entry Price) * Number of Contracts
-    PNL of Closing Short Position = -1 * DOT Multiplier * (Exit Price - Entry Price) * Number of Contracts
+    Initial Margin in DOT =
+      Initial Margin Requirement * DOT Multiplier * Average Opening Price * Number of Contracts
+    PNL of Closing Long Position =
+      DOT Multiplier * (Average Closing Price - Average Opening Price) * Number of Contracts
+    PNL of Closing Short Position =
+      -1 * DOT Multiplier * (Average Closing Price - Average Opening Price) * Number of Contracts
   </code>
 </aside>
 
 <p>Where:</p>
 
 <ul>
-<li><code>Initial Margin Requirement</code> is the % margin required for the trade; see <a href="#margin">margin</a> for more info</li>
+<li><code>Initial Margin Requirement</code> is the % margin required to put on the position; see <a href="#margin">margin</a> for more info</li>
 <li><code>DOT Multiplier</code> is the fixed multiplier set by Satori between the denominated asset of the trading pair and DOT</li>
 </ul>
 
@@ -431,8 +434,10 @@
 
 <aside class="formula">
   <code>
-    Closing Price (long) = Average Opening Price * (1 + Maintenance Margin Rate) - (Position Margin / Number of Contracts)
-    Closing Price (short) = Average Opening Price * (1 - Maintenance Margin Rate) + (Position Margin / Number of Contracts)
+    Closing Price (long) =
+      Average Opening Price * (1 + Maintenance Margin Rate) - (Position Margin / Number of Contracts)
+    Closing Price (short) =
+      Average Opening Price * (1 - Maintenance Margin Rate) + (Position Margin / Number of Contracts)
   </code>
 </aside>
 
