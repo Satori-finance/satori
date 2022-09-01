@@ -333,6 +333,9 @@
             <a href="#perpetuals" class="toc-h1 toc-link" data-title="Perpetuals">Perpetuals</a>
               <ul class="toc-list-h2">
                   <li>
+                    <a href="#matchmaking" class="toc-h2 toc-link" data-title="Matchmaking">Matchmaking</a>
+                  </li>
+                  <li>
                     <a href="#margin" class="toc-h2 toc-link" data-title="Margin">Margin</a>
                   </li>
                   <li>
@@ -340,6 +343,12 @@
                   </li>
                   <li>
                     <a href="#trading-fees" class="toc-h2 toc-link" data-title="Trading fees">Trading fees</a>
+                  </li>
+                  <li>
+                    <a href="#index-price" class="toc-h2 toc-link" data-title="Index Price">Index Price</a>
+                  </li>
+                  <li>
+                    <a href="#oracle-price" class="toc-h2 toc-link" data-title="Oracle Price">Oracle Price</a>
                   </li>
               </ul>
           </li>
@@ -354,15 +363,6 @@
                   </li>
                   <li>
                     <a href="#automatic-deleveraging-system" class="toc-h2 toc-link" data-title="Automatic Deleveraging System">Automatic Deleveraging System</a>
-                  </li>
-                  <li>
-                    <a href="#index-price" class="toc-h2 toc-link" data-title="Index Price">Index Price</a>
-                  </li>
-                  <li>
-                    <a href="#oracle-price" class="toc-h2 toc-link" data-title="Oracle Price">Oracle Price</a>
-                  </li>
-                  <li>
-                    <a href="#matchmaking" class="toc-h2 toc-link" data-title="Matchmaking">Matchmaking</a>
                   </li>
               </ul>
           </li>
@@ -399,6 +399,8 @@
 <p>Users can return the principal and any accrued interest to redeem the corresponding amount of the collateral. Users can also withdraw their funds in USDT at any point.</p>
 <h1 id='perpetuals'>Perpetuals</h1>
 <p>A perpetual contract is a derivative that approximates leveraged spot trading. Investors can buy to gain from rising prices, or sell to gain from falling prices. The perpetual contract differs from traditional futures in some ways: it has no expiration time and therefore no restrictions on how long users are able to hold a position. In order to ensure that the underlying price index is tracked, perpetual contracts are guaranteed to follow the price of the underlying asset through a funding fee mechanism.</p>
+<h2 id='matchmaking'>Matchmaking</h2>
+<p>Orders will be aggregated by price-time on a FIFO basis. A transaction happens if there is a buy order that has a price equal or greater than a sell order, or if there is a market order placed in one direction and orders exist in the opposing direction.</p>
 <h2 id='margin'>Margin</h2>
 <p>Satori enforces margin requirements for users -- an initial margin requirement to open and size-up positions, and a maintenance margin requirement to avoid liquidations. Margin can be added and removed at will above the initial margin.</p>
 
@@ -520,6 +522,32 @@
 <td>0.06%</td>
 </tr>
 </tbody></table>
+<h2 id='index-price'>Index Price</h2>
+<p>The <code>Index Price</code> refers to the price of the underlying asset on the spot market. It&#39;s an aggregate price based off price data from multiple exchanges, calculated every second.</p>
+
+<p>The exchanges we aggregate from are as follows for each market:</p>
+<h4 id='btc-usdt'>BTC-USDT</h4>
+<p><code>Okex</code>
+<code>Binance</code>
+<code>Huobi</code></p>
+<h4 id='eth-usdt'>ETH-USDT</h4>
+<p><code>Okex</code>
+<code>Binance</code>
+<code>Huobi</code></p>
+<h4 id='dot-usdt'>DOT-USDT</h4>
+<p><code>Okex</code>
+<code>Binance</code>
+<code>Huobi</code></p>
+
+<p>We have implemented logic to ensure that index fluctuations are within the normal range when there is a significant deviation from the price of a single exchange.</p>
+
+<p>If an exchange price deviates by more than 3% relative to the median price of all exchanges, the weight that exchange is given will be reduced.</p>
+<h2 id='oracle-price'>Oracle Price</h2>
+<p>The <code>Oracle Price</code> is an aggregate price calculated using multiple on-chain price oracles. Oracle prices are used to determine collateralization and liquidations on Satori.</p>
+
+<p>Since the oracle price is also an aggregate price, it offers similar protection from flash crashes as the index price does.</p>
+
+<p>For the Alpha launch, Satori runs its own oracle nodes on Layer 2.</p>
 <h1 id='liquidations'>Liquidations</h1>
 <p>Positions where the margin rate is less than or equal to the maintenance margin rate may be liquidated.</p>
 <h2 id='closing-price'>Closing Price</h2>
@@ -570,34 +598,6 @@
 <li><code>Bankruptcy value</code> is the value of position at the bankruptcy price</li>
 <li><code>Average opening value</code> is the the value of position at average opening price</li>
 </ul>
-<h2 id='index-price'>Index Price</h2>
-<p>The <code>Index Price</code> refers to the price of the underlying asset on the spot market. It&#39;s an aggregate price based off price data from multiple exchanges, calculated every second.</p>
-
-<p>The exchanges we aggregate from are as follows for each market:</p>
-<h4 id='btc-usdt'>BTC-USDT</h4>
-<p><code>Okex</code>
-<code>Binance</code>
-<code>Huobi</code></p>
-<h4 id='eth-usdt'>ETH-USDT</h4>
-<p><code>Okex</code>
-<code>Binance</code>
-<code>Huobi</code></p>
-<h4 id='dot-usdt'>DOT-USDT</h4>
-<p><code>Okex</code>
-<code>Binance</code>
-<code>Huobi</code></p>
-
-<p>We have implemented logic to ensure that index fluctuations are within the normal range when there is a significant deviation from the price of a single exchange.</p>
-
-<p>If an exchange price deviates by more than 3% relative to the median price of all exchanges, the weight that exchange is given will be reduced.</p>
-<h2 id='oracle-price'>Oracle Price</h2>
-<p>The <code>Oracle Price</code> is an aggregate price calculated using multiple on-chain price oracles. Oracle prices are used to determine collateralization and liquidations on Satori.</p>
-
-<p>Since the oracle price is also an aggregate price, it offers similar protection from flash crashes as the index price does.</p>
-
-<p>For the Alpha launch, Satori runs its own oracle nodes on Layer 2.</p>
-<h2 id='matchmaking'>Matchmaking</h2>
-<p>Orders will be aggregated by price-time on a FIFO basis. A transaction happens if there is a buy order that has a price equal or greater than a sell order, or if there is a market order placed in one direction and orders exist in the opposing direction</p>
 
 <!-- ```ruby
 require 'kittn'
