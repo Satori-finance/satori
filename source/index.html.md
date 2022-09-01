@@ -55,6 +55,10 @@ Users can return the principal and any accrued interest to redeem the correspond
 
 A perpetual contract is a derivative that approximates leveraged spot trading. Investors can buy to gain from rising prices, or sell to gain from falling prices. The perpetual contract differs from traditional futures in some ways: it has no expiration time and therefore no restrictions on how long users are able to hold a position. In order to ensure that the underlying price index is tracked, perpetual contracts are guaranteed to follow the price of the underlying asset through a funding fee mechanism.
 
+## Matchmaking
+
+Orders will be aggregated by price-time on a FIFO basis. A transaction happens if there is a buy order that has a price equal or greater than a sell order, or if there is a market order placed in one direction and orders exist in the opposing direction.
+
 ## Margin
 
 Satori enforces margin requirements for users -- an initial margin requirement to open and size-up positions, and a maintenance margin requirement to avoid liquidations. Margin can be added and removed at will above the initial margin.
@@ -141,6 +145,42 @@ The fees are differentiated between whether or not the user was a maker or taker
 | ETH   | 0.04%      | 0.06%      |
 | DOT   | 0.04%      | 0.06%      |
 
+## Index Price
+
+The `Index Price` refers to the price of the underlying asset on the spot market. It's an aggregate price based off price data from multiple exchanges, calculated every second.
+
+The exchanges we aggregate from are as follows for each market:
+
+#### BTC-USDT
+
+`Okex`
+`Binance`
+`Huobi`
+
+#### ETH-USDT
+
+`Okex`
+`Binance`
+`Huobi`
+
+#### DOT-USDT
+
+`Okex`
+`Binance`
+`Huobi`
+
+We have implemented logic to ensure that index fluctuations are within the normal range when there is a significant deviation from the price of a single exchange.
+
+If an exchange price deviates by more than 3% relative to the median price of all exchanges, the weight that exchange is given will be reduced.
+
+## Oracle Price
+
+The `Oracle Price` is an aggregate price calculated using multiple on-chain price oracles. Oracle prices are used to determine collateralization and liquidations on Satori.
+
+Since the oracle price is also an aggregate price, it offers similar protection from flash crashes as the index price does.
+
+For the Alpha launch, Satori runs its own oracle nodes on Layer 2.
+
 # Liquidations
 
 Positions where the margin rate is less than or equal to the maintenance margin rate may be liquidated.
@@ -198,46 +238,6 @@ Where:
 - `Mark value` is the value of the position at the mark price
 - `Bankruptcy value` is the value of position at the bankruptcy price
 - `Average opening value` is the the value of position at average opening price
-
-## Index Price
-
-The `Index Price` refers to the price of the underlying asset on the spot market. It's an aggregate price based off price data from multiple exchanges, calculated every second.
-
-The exchanges we aggregate from are as follows for each market:
-
-#### BTC-USDT
-
-`Okex`
-`Binance`
-`Huobi`
-
-#### ETH-USDT
-
-`Okex`
-`Binance`
-`Huobi`
-
-#### DOT-USDT
-
-`Okex`
-`Binance`
-`Huobi`
-
-We have implemented logic to ensure that index fluctuations are within the normal range when there is a significant deviation from the price of a single exchange.
-
-If an exchange price deviates by more than 3% relative to the median price of all exchanges, the weight that exchange is given will be reduced.
-
-## Oracle Price
-
-The `Oracle Price` is an aggregate price calculated using multiple on-chain price oracles. Oracle prices are used to determine collateralization and liquidations on Satori.
-
-Since the oracle price is also an aggregate price, it offers similar protection from flash crashes as the index price does.
-
-For the Alpha launch, Satori runs its own oracle nodes on Layer 2.
-
-## Matchmaking
-
-Orders will be aggregated by price-time on a FIFO basis. A transaction happens if there is a buy order that has a price equal or greater than a sell order, or if there is a market order placed in one direction and orders exist in the opposing direction
 
 <!-- ```ruby
 require 'kittn'
