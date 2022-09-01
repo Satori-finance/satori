@@ -19,41 +19,51 @@ meta:
 
 # Introduction
 
-Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized financial derivatives platform built on Polkadot. It features a hybrid of orderbook and AMM models to provide comprehensive exposure to a wide range of assets, and an “off-chain aggregation and on-chain settlement” design that combines the security and transparency of a decentralized exchange, with the speed and usability of a centralized exchange.
+Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized financial derivatives platform built on Polkadot. It features an order book model in collaboration with many market makers to provide comprehensive exposure to a wide range of assets, and an “off-chain aggregation and on-chain settlement” design that combines the security and transparency of a decentralized exchange, with the speed and usability of a centralized exchange.
 
-# Perpetuals
+# User funds
 
-## Quanto Futures
+## Adding Funds
+Users can directly use USDT to trade on the Satori exchange, but can also optionally use DOT or accepted forms of synthetic DOT as collateral to borrow USD equivalent to trade on the Satori exchange.
 
-Satori offers the ability to trade quanto futures in DOT or synthetic DOT. This allows traders to speculate on trading pairs without holding either of the assets by setting a fixed multiplier between DOT and the contract. All margin, profit, and loss will be in DOT terms, calculated using the following formulas:
+### DeFi Loan
+Users can use DOT or synthetic DOT to trade on the Satori platform with the "DeFi Loan" functionality. More specifically, users can pledge DOT or synthetic DOT to Satori's loan contracts in order to mint Satori's platform coins (displayed as USDT).
 
+The collateral ratio is currently set to `65%`, and there is an extra safety factor of `2%`, which means the highest possible borrowing rate is `63%`.
+
+There is an APR of `0.025%` on the loan, charged every second.
+
+### Loan Liquidation
+If the health factor, defined as follows, falls below 1, then the loan will be subject to liquidation.
 <aside class="formula">
   <code>
-    Initial Margin in DOT =
-      Initial Margin Requirement * DOT Multiplier * Average Opening Price * Number of Contracts
-
-    PNL of Closing Long Position =
-      DOT Multiplier * (Average Closing Price - Average Opening Price) * Number of Contracts
-
-    PNL of Closing Short Position =
-      -1 * DOT Multiplier * (Average Closing Price - Average Opening Price) * Number of Contracts
+    Health Factor = (Total Collateral Value * Collateral Ratio) / (Loan Amount + Loan Interest)
   </code>
 </aside>
 
-Where:
+If the lending ratio, defined as follows, exceeds the collateral ratio, then the loan will be subject to liquidation.
+<aside class="formula">
+  <code>
+    Lending Ratio = Loan Amount / (Total Collateral Value - Interest on Loan)
+  </code>
+</aside>
 
-- `Initial Margin Requirement` is the % margin required to put on the position; see [margin](#margin) for more info
-- `DOT Multiplier` is the fixed multiplier set by Satori between the denominated asset of the trading pair and DOT
+## Withdrawing Funds
+Users can return the principal and any accrued interest to redeem the corresponding amount of the collateral. Users can also withdraw their funds in USDT at any point.
 
-For example, the BTC-USDT quanto futures contract on DOT has a fixed DOT multiplier of 0.05, which means that for every 1 USDT move in the BTC-USDT price, the contract pays out 0.05 DOT. Positions will make or lose DOT as the BTC/USDT exchange rate changes.
+# Perpetuals
+
+A perpetual contract is a derivative that approximates leveraged spot trading. Investors can buy to gain from rising prices, or sell to gain from falling prices. The perpetual contract differs from traditional futures in some ways: it has no expiration time and therefore no restrictions on how long users are able to hold a position. In order to ensure that the underlying price index is tracked, perpetual contracts are guaranteed to follow the price of the underlying asset through a funding fee mechanism.
 
 ## Margin
 
-Satori enforces margin requirements for users -- an initial margin requirement to open and size-up positions, and a maintenance margin requirement to avoid liquidations. All positions are set to isolated margin, which means margin is assigned by specific positions. Margin can be added and removed at will above the initial margin.
+Satori enforces margin requirements for users -- an initial margin requirement to open and size-up positions, and a maintenance margin requirement to avoid liquidations. Margin can be added and removed at will above the initial margin.
+
+Either cross-margining or isolated-margining can be used. Cross-margining means that all of the margin balance in a user's account is used as margin for any position. In this mode, a user's position is at a much lower risk of being forced to close. Isolated-margining means that the guaranteed assets allocated to a position are limited to a certain amount. In this mode, if a user's position is blown out due to price fluctuations, only the margin amount of the position in that direction will be lost, and no other funds in the account will be affected.
 
 ### Initial Margin
 
-The maximum supported leverage is 20x, so least 5% of the position value must be used as collateral upon opening a new position.
+The maximum supported leverage is 25x, so least 4% of the position value must be used as collateral upon opening a new position.
 
 For example, with $100 of collateral, the maximum position size that can be put on is:
 
@@ -61,7 +71,7 @@ For example, with $100 of collateral, the maximum position size that can be put 
 | -------- | ------------- |
 | 5x       | $500          |
 | 10x      | $1,000        |
-| 20x      | $2,000        |
+| 25x      | $2,500        |
 
 ### Maintenance Margin
 
@@ -77,65 +87,7 @@ The maintenance margin rates are determined on a per-token-pair basis:
 
 For example, a long leveraged position in BTC-USDT may be liquidated after the mark price dips below 0.5% above the bankruptcy price.
 
-All collateral is held as DOT, and the denominated asset for all perpetual markets is USDT.
-
-## Liquidations
-
-Positions where the margin rate is less than or equal to the maintenance margin rate may be liquidated.
-
-### Closing Price
-
-The closing price is determined by:
-
-<aside class="formula">
-  <code>
-    Closing Price (long) =
-      Average Opening Price * (1 + Maintenance Margin Rate) - (Position Margin / Number of Contracts)
-
-    Closing Price (short) =
-      Average Opening Price * (1 - Maintenance Margin Rate) + (Position Margin / Number of Contracts)
-  </code>
-</aside>
-
-If the position is liquidated at a price better than the bankruptcy price, then the funds will be added to the insurance vault. Otherwise, if the position is liquidated at a worse price, then the insurance vault funds will be used to cover the loss due to the position. If that insurance vault is insufficient, then the [auto-deleveraging system](#automatic-deleveraging-system) will reduce the positions of investors that have positions in the opposite direction.
-
-### Insurance Vault
-
-When a position is liquidated, it will be taken over by the forced liquidation system. If the liquidation cannot be fulfilled by the time the perpetual reaches the bankruptcy price, the loss will be covered by the insurance vault, a reserve maintained by the platform.
-
-The insurance vault is currently seeded and maintained by the Satori team, and will eventually be funded through trading fees.
-
-### Automatic Deleveraging System
-
-In the event that the insurance vault is insufficient to cover a liquidation loss, the Automatic Deleveraging System (ADL) will automatically deleverage traders holding positions in the opposite direction.
-
-The ADL will deleverage traders in descending order of profit and leverage, i.e. the higher the profit and the more leverage used the higher the ranking.
-
-Traders can view their priority ranking for automatic position reduction via the “ADL Ranking” indicator in the UI. Each light represents a 20% priority ranking, and when all lights are on, the position may be reduced in the event of a forced liquidation.
-
-Positions will be reduced atomically: after the first user's position in line has been fully reduced, the second position will continue to be reduced and so on.
-
-### ADL ranking calculation method
-
-<aside class="formula">
-    <code>
-    Ranking =
-            % profit * effective leverage (if profit, i.e. % profit > 0)
-
-            OR
-
-            % profit / effective leverage (if loss, i.e. % profit < 0)
-    </code>
-
-</aside>
-
-Where:
-
-- `Effective leverage` is `mark value / (mark value - bankruptcy value)`
-- `% profit` is `(mark value - average open value) / average opening value`
-- `Mark value` is the value of the position at the mark price
-- `Bankruptcy value` is the value of position at the bankruptcy price
-- `Average opening value` is the the value of position at average opening price
+The denominated asset for all perpetual markets is USDT.
 
 ## Funding Costs
 
@@ -180,9 +132,76 @@ In other words, the funding fee ate will equal the hourly interest rate if the p
 
 The absolute value of the Funding Fee Rate is capped at 0.075%.
 
+## Trading fees
+The fees are differentiated between whether or not the user was a maker or taker for the trade.
+
+| Token | Maker Fees | Taker Fees |
+| ----- | ---------- | ---------- |
+| BTC   | 0.04%      | 0.06%      |
+| ETH   | 0.04%      | 0.06%      |
+| DOT   | 0.04%      | 0.06%      |
+
+# Liquidations
+
+Positions where the margin rate is less than or equal to the maintenance margin rate may be liquidated.
+
+## Closing Price
+
+The closing price is determined by:
+
+<aside class="formula">
+  <code>
+    Closing Price (long) =
+      Average Opening Price * (1 + Maintenance Margin Rate) - (Position Margin / Number of Contracts)
+
+    Closing Price (short) =
+      Average Opening Price * (1 - Maintenance Margin Rate) + (Position Margin / Number of Contracts)
+  </code>
+</aside>
+
+If the position is liquidated at a price better than the bankruptcy price, then the funds will be added to the insurance vault. Otherwise, if the position is liquidated at a worse price, then the insurance vault funds will be used to cover the loss due to the position. If that insurance vault is insufficient, then the [auto-deleveraging system](#automatic-deleveraging-system) will reduce the positions of investors that have positions in the opposite direction.
+
+## Insurance Vault
+
+When a position is liquidated, it will be taken over by the forced liquidation system. If the liquidation cannot be fulfilled by the time the perpetual reaches the bankruptcy price, the loss will be covered by the insurance vault, a reserve maintained by the platform.
+
+The insurance vault is currently seeded and maintained by the Satori team, and will eventually be funded through trading fees.
+
+## Automatic Deleveraging System
+
+In the event that the insurance vault is insufficient to cover a liquidation loss, the Automatic Deleveraging System (ADL) will automatically deleverage traders holding positions in the opposite direction.
+
+The ADL will deleverage traders in descending order of profit and leverage, i.e. the higher the profit and the more leverage used the higher the ranking.
+
+Traders can view their priority ranking for automatic position reduction via the “ADL Ranking” indicator in the UI. Each light represents a 20% priority ranking, and when all lights are on, the position may be reduced in the event of a forced liquidation.
+
+Positions will be reduced atomically: after the first user's position in line has been fully reduced, the second position will continue to be reduced and so on.
+
+### ADL ranking calculation method
+
+<aside class="formula">
+    <code>
+    Ranking =
+            % profit * effective leverage (if profit, i.e. % profit > 0)
+
+            OR
+
+            % profit / effective leverage (if loss, i.e. % profit < 0)
+    </code>
+
+</aside>
+
+Where:
+
+- `Effective leverage` is `mark value / (mark value - bankruptcy value)`
+- `% profit` is `(mark value - average open value) / average opening value`
+- `Mark value` is the value of the position at the mark price
+- `Bankruptcy value` is the value of position at the bankruptcy price
+- `Average opening value` is the the value of position at average opening price
+
 ## Index Price
 
-The `Index Price` refers to the price of the underlying asset on the spot market. It's an aggregate price based off price data from multiple exchanges.
+The `Index Price` refers to the price of the underlying asset on the spot market. It's an aggregate price based off price data from multiple exchanges, calculated every second.
 
 The exchanges we aggregate from are as follows for each market:
 
