@@ -31,7 +31,7 @@ Users can use DOT or synthetic DOT to trade on the Satori platform with the "DeF
 
 The collateral ratio is currently set to `65%`, and there is an extra safety factor of `2%`, which means the highest possible borrowing rate is `63%`.
 
-There is an APR of `0.025%` on the loan, charged every second.
+There is a daily interest rate of `0.025%` on the loan, charged every second.
 
 ### Loan Liquidation
 If the health factor, defined as follows, falls below 1, then the loan will be subject to liquidation.
@@ -57,7 +57,7 @@ A perpetual contract is a derivative that approximates leveraged spot trading. I
 
 ## Matchmaking
 
-Orders will be aggregated by price-time on a FIFO basis. A transaction happens if there is a buy order that has a price equal or greater than a sell order, or if there is a market order placed in one direction and orders exist in the opposing direction.
+Orders will be matched by price-time on a FIFO basis. A transaction happens if there is a buy order that has a price equal or greater than a sell order, or if there is a market order placed in one direction and orders exist in the opposing direction.
 
 ## Margin
 
@@ -130,7 +130,7 @@ Altogether, the funding fee rate is calculated as:
     Funding Fee Rate = Premium Index + clamp(Interest Rate/24 - Premium Index, 0.05%, -0.05%)
 </aside>
 
-In other words, the funding fee ate will equal the hourly interest rate if the premium index is within 0.05% of the hourly interest rate.
+In other words, the funding fee rate will equal the hourly interest rate if the premium index is within 0.05% of the hourly interest rate.
 
 ### Funding Fee Rate Cap
 
