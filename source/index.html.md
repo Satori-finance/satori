@@ -134,7 +134,7 @@ In other words, the funding fee rate will equal the hourly interest rate if the 
 
 ### Funding Fee Rate Cap
 
-The absolute value of the Funding Fee Rate is capped at 0.075%.
+The absolute value of the Funding Fee Rate is capped at 0.75%.
 
 ## Trading fees
 The fees are differentiated between whether or not the user was a maker or taker for the trade.
