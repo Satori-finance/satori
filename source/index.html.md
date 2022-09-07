@@ -34,19 +34,21 @@ The collateral ratio is currently set to `65%`, and there is an extra safety fac
 There is a daily interest rate of `0.025%` on the loan, charged every second.
 
 ### Loan Liquidation
-If the health factor, defined as follows, falls below 1, then the loan will be subject to liquidation.
+The health factor is defined as follows:
 <aside class="formula">
   <code>
     Health Factor = (Total Collateral Value * Collateral Ratio) / (Loan Amount + Loan Interest)
   </code>
 </aside>
 
-If the lending ratio, defined as follows, exceeds the collateral ratio, then the loan will be subject to liquidation.
+The lending ratio is defined as follows:
 <aside class="formula">
   <code>
     Lending Ratio = Loan Amount / (Total Collateral Value - Interest on Loan)
   </code>
 </aside>
+
+If both the health factor falls below 1 and the lending ratio exceeds the collateral ratio, then the loan will be subject to liquidation.
 
 ## Withdrawing Funds
 Users can return the principal and any accrued interest to redeem the corresponding amount of the collateral. Users can also withdraw their funds in USDT at any point.
