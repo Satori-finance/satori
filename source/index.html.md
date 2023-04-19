@@ -276,7 +276,6 @@ Satori offers a WebSocket API for streaming updates.
 - Production: `ws://zk.satori.finance`
 
 ## Subscriptions
-
 ### Subscribing to Account Data
 
 url: `${wsUrl}/api/account/ws`
@@ -305,7 +304,7 @@ url: `${wsUrl}/api/account/ws`
 }
 ```
 
-#### Request Parameters
+Request Parameters
 
 | Field     | Type   | Required | Description                               |
 | --------- | ------ | -------- | ----------------------------------------- |
@@ -316,7 +315,7 @@ url: `${wsUrl}/api/account/ws`
 | signature | String | √        | Signature                                 |
 | symbol    | String | √        | Asset symbol                              |
 
-#### Response Parameters
+Response Parameters
 
 | Field   | Type    | Required | Description                                    |
 | ------- | ------- | -------- | ---------------------------------------------- |
@@ -330,7 +329,7 @@ url: `${wsUrl}/api/account/ws`
 
 url: `${wsUrl}/api/entrust/ws`
 
-#### Request Parameters
+Request Parameters
 
 | Field     | Type    | Required | Description                               |
 | --------- | ------ | -------- | ------------------------------------------ |
@@ -341,7 +340,7 @@ url: `${wsUrl}/api/entrust/ws`
 | signature | String | √        | Signature                                  |
 | pair      | String | √        | Trading Pair                               |
 
-#### Response Parameters
+Response Parameters
 
 | Field   | Type    | Required | Description                                    |
 | ------- | ------- | -------- | ---------------------------------------------- |
@@ -355,7 +354,7 @@ url: `${wsUrl}/api/entrust/ws`
 
 url: `${wsUrl}/api/position/ws`
 
-#### Request Parameters
+Request Parameters
 
 | Field     | Type   | Required | Description                                    |
 | --------- | ------ | -------- | ---------------------------------------------- |
@@ -366,7 +365,7 @@ url: `${wsUrl}/api/position/ws`
 | signature | String | √        | Signature                                      |
 | pair      | String | √        | Trading pair                                   |
 
-#### Response Parameters
+Response Parameters
 
 | Field   | Type    | Required | Description                                    |
 | ------- | ------- | -------- | ---------------------------------------------- |
@@ -380,7 +379,7 @@ url: `${wsUrl}/api/position/ws`
 
 url: `${wsUrl}/api/kline/ws`
 
-#### Request Parameters
+Request Parameters
 
 | Field     | Type   | Required | Description                                |
 | --------- | ------ | -------- | ------------------------------------------ |
@@ -392,7 +391,7 @@ url: `${wsUrl}/api/kline/ws`
 | pair      | String | √        | Trading pair                               |
 | period    | String | √        | Check the periodEnum table                 |
 
-#### Response Parameters
+Response Parameters
 
 | Field   | Type    | Required | Description                                    |
 | ------- | ------- | -------- | ---------------------------------------------- |
@@ -407,7 +406,7 @@ url: `${wsUrl}/api/kline/ws`
 
 url: `${wsUrl}/api/depth/ws`
 
-#### Request Parameters
+Request Parameters
 
 | Field     | Type   | Required | Description                                |
 | --------- | ------ | -------- | ------------------------------------------ |
@@ -418,7 +417,7 @@ url: `${wsUrl}/api/depth/ws`
 | signature | String | √        | Signature                                  |
 | pair      | String | √        | Trading pair                               |
 
-#### Response parameters
+Response parameters
 
 | Field   | Type    | Required | Description                                    |
 | ------- | ------- | -------- | ---------------------------------------------- |
@@ -431,7 +430,7 @@ url: `${wsUrl}/api/depth/ws`
 
  url: `${wsUrl}/api/trans/ws`
 
-#### Request Parameters
+Request Parameters
 
 | Field     | Type   | Required | Description                                 |
 | --------- | ------ | -------- | ------------------------------------------- |
@@ -443,7 +442,7 @@ url: `${wsUrl}/api/depth/ws`
 | pair      | String | √        | Trading pair                                |
 | period    | String | √        | Check the periodEnum table                  |
 
-#### Response parameters
+Response parameters
 
 | Field   | Type    | Required | Description                                    |
 | ------- | ------- | -------- | ---------------------------------------------- |
@@ -481,7 +480,7 @@ url: `${wsUrl}/api/depth/ws`
 | event   | String  |          | See event table (api_account)   |
 | success | Boolean |          | true,false                      |
 
-#### Data
+Data
 
 | Field           | Type   | Required | Description                              |
 | --------------- | ------ | -------- | -----------------------------------------|
@@ -500,7 +499,7 @@ url: `${wsUrl}/api/depth/ws`
 | event   | String  |          | See event table(api_entrust)    |
 | success | Boolean |          | true,false                      |
 
-#### Data
+Data
 
 | Field            | Type    | Required | Description                            |
 | ---------------- | ------- | -------- | -------------------------------------- |
@@ -527,7 +526,7 @@ url: `${wsUrl}/api/depth/ws`
 | event   | String  |          | See event table (api_position)   |
 | success | Boolean |          | true,false                       |
 
-#### Data
+Data
 
 | Field             | Type    | Required | Description                           |
 | ----------------- | ------- | -------- | ------------------------------------- |
@@ -549,7 +548,7 @@ url: `${wsUrl}/api/depth/ws`
 | event   | String  |          | See event table (api_kline)      |
 | success | Boolean |          | true,false                       |
 
-#### Data
+Data
 
 | Field          | Type       | Required | Description                          |
 | -------------- | ---------- | -------- | ------------------------------------ |
@@ -611,21 +610,21 @@ url: `${wsUrl}/api/depth/ws`
 | event   | String  |          | See event table(api_depth)     |
 | success | Boolean |          | true,false                     |
 
-#### data
+Data
 
 | Field | Type | Required | Description  |
 | ----- | ---- | -------- | ------------ |
 | asks  | List |          | List of asks |
 | bids  | List |          | List of bids |
 
-#### asks
+Asks
 
 | Field    | Type   | Required | Description  |
 | -------- | ------ | -------- | ------------ |
 | price    | String |          | Price        |
 | quantity | String |          | Quantity     |
 
-#### bids
+Bids
 
 | Field    | Type   | Required | Description  |
 | -------- | ------ | -------- | ------------ |
@@ -640,7 +639,7 @@ url: `${wsUrl}/api/depth/ws`
 | event   | String  |          | See event table(api_trade)     |
 | success | Boolean |          | true,false                     |
 
-### Data
+Data
 
 | Field          | Type       | Required | Description                          |
 | ------------------- | ---------- | -------- | ------------------------------- |
@@ -654,9 +653,9 @@ url: `${wsUrl}/api/depth/ws`
 | timestamp           | Long       |          | Time                            |
 | contractPairId      | Long       |          | Trading pair ID                 |
 
-### Fields
+## Fields
 
-#### periodEnum
+### periodEnum
 
 periodEnum represents the time periods for data used in the API
 
@@ -675,7 +674,7 @@ periodEnum represents the time periods for data used in the API
 `1MONTH`
 `1YEAR`
 
-#### events
+### events
 
 `api_entrust`
 `api_position`
