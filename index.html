@@ -366,39 +366,46 @@
                   </li>
               </ul>
           </li>
+          <li>
+            <a href="#websocket-api" class="toc-h1 toc-link" data-title="Websocket API">Websocket API</a>
+          </li>
+          <li>
+            <a href="#subscriptions" class="toc-h1 toc-link" data-title="Subscriptions">Subscriptions</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#subscribing-to-account-data" class="toc-h2 toc-link" data-title="Subscribing to Account Data">Subscribing to Account Data</a>
+                  </li>
+                  <li>
+                    <a href="#subscribing-to-orders" class="toc-h2 toc-link" data-title="Subscribing to Orders">Subscribing to Orders</a>
+                  </li>
+                  <li>
+                    <a href="#subscribing-to-positions" class="toc-h2 toc-link" data-title="Subscribing to Positions">Subscribing to Positions</a>
+                  </li>
+                  <li>
+                    <a href="#subscribing-to-kline-data" class="toc-h2 toc-link" data-title="Subscribing to Kline Data">Subscribing to Kline Data</a>
+                  </li>
+                  <li>
+                    <a href="#subscribing-to-market-data" class="toc-h2 toc-link" data-title="Subscribing to Market Data">Subscribing to Market Data</a>
+                  </li>
+                  <li>
+                    <a href="#subscribing-to-trading-data" class="toc-h2 toc-link" data-title="Subscribing to Trading Data">Subscribing to Trading Data</a>
+                  </li>
+                  <li>
+                    <a href="#updates" class="toc-h2 toc-link" data-title="Updates">Updates</a>
+                  </li>
+              </ul>
+          </li>
       </ul>
     </div>
     <div class="page-wrapper">
       <div class="dark-box"></div>
       <div class="content">
         <h1 id='introduction'>Introduction</h1>
-<p>Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized financial derivatives platform built on Polkadot. It features an order book model in collaboration with many market makers to provide comprehensive exposure to a wide range of assets, and an “off-chain aggregation and on-chain settlement” design that combines the security and transparency of a decentralized exchange, with the speed and usability of a centralized exchange.</p>
+<p>Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized financial derivatives platform built on Polygon zkEVM, zkSync, and Scroll. It features an order book model in collaboration with many market makers to provide comprehensive exposure to a wide range of assets, and an “off-chain aggregation and on-chain settlement” design that combines the security and transparency of a decentralized exchange, with the speed and usability of a centralized exchange.</p>
 <h1 id='user-funds'>User funds</h1><h2 id='adding-funds'>Adding Funds</h2>
-<p>Users can directly use USDT to trade on the Satori exchange, but can also optionally use DOT or accepted forms of synthetic DOT as collateral to borrow USD equivalent to trade on the Satori exchange.</p>
-<h3 id='defi-loan'>DeFi Loan</h3>
-<p>Users can use DOT or synthetic DOT to trade on the Satori platform with the &quot;DeFi Loan&quot; functionality. More specifically, users can pledge DOT or synthetic DOT to Satori&#39;s loan contracts in order to mint Satori&#39;s platform coins (displayed as USDT).</p>
-
-<p>The collateral ratio is currently set to <code>65%</code>, and there is an extra safety factor of <code>2%</code>, which means the highest possible borrowing rate is <code>63%</code>.</p>
-
-<p>There is a daily interest rate of <code>0.025%</code> on the loan, charged every second.</p>
-<h3 id='loan-liquidation'>Loan Liquidation</h3>
-<p>The health factor is defined as follows:
-<aside class="formula">
-  <code>
-    Health Factor = (Total Collateral Value * Collateral Ratio) / (Loan Amount + Loan Interest)
-  </code>
-</aside></p>
-
-<p>The lending ratio is defined as follows:
-<aside class="formula">
-  <code>
-    Lending Ratio = Loan Amount / (Total Collateral Value - Interest on Loan)
-  </code>
-</aside></p>
-
-<p>If both the health factor falls below 1 and the lending ratio exceeds the collateral ratio, then the loan will be subject to liquidation.</p>
+<p>Users can directly deposit USDT to trade on the Satori exchange.</p>
 <h2 id='withdrawing-funds'>Withdrawing Funds</h2>
-<p>Users can return the principal and any accrued interest to redeem the corresponding amount of the collateral. Users can also withdraw their funds in USDT at any point.</p>
+<p>Users can withdraw their funds in USDT at any point.</p>
 <h1 id='perpetuals'>Perpetuals</h1>
 <p>A perpetual contract is a derivative that approximates leveraged spot trading. Investors can buy to gain from rising prices, or sell to gain from falling prices. The perpetual contract differs from traditional futures in some ways: it has no expiration time and therefore no restrictions on how long users are able to hold a position. In order to ensure that the underlying price index is tracked, perpetual contracts are guaranteed to follow the price of the underlying asset through a funding fee mechanism.</p>
 <h2 id='matchmaking'>Matchmaking</h2>
@@ -451,7 +458,7 @@
 <td>0.5%</td>
 </tr>
 <tr>
-<td>DOT</td>
+<td>MATIC</td>
 <td>0.5%</td>
 </tr>
 </tbody></table>
@@ -519,7 +526,7 @@
 <td>0.06%</td>
 </tr>
 <tr>
-<td>DOT</td>
+<td>MATIC</td>
 <td>0.04%</td>
 <td>0.06%</td>
 </tr>
@@ -528,28 +535,30 @@
 <p>The <code>Index Price</code> refers to the price of the underlying asset on the spot market. It&#39;s an aggregate price based off price data from multiple exchanges, calculated every second.</p>
 
 <p>The exchanges we aggregate from are as follows for each market:</p>
-<h4 id='btc-usdt'>BTC-USDT</h4>
-<p><code>Okex</code>
+<h4 id='btc-usd'>BTC-USD</h4>
+<p><code>Coinbase</code>
 <code>Binance</code>
-<code>Huobi</code></p>
-<h4 id='eth-usdt'>ETH-USDT</h4>
-<p><code>Okex</code>
+<code>OKX</code></p>
+<h4 id='eth-usd'>ETH-USD</h4>
+<p><code>Coinbase</code>
 <code>Binance</code>
-<code>Huobi</code></p>
-<h4 id='dot-usdt'>DOT-USDT</h4>
-<p><code>Okex</code>
+<code>OKX</code></p>
+<h4 id='matic-usd'>MATIC-USD</h4>
+<p><code>Coinbase</code>
 <code>Binance</code>
-<code>Huobi</code></p>
+<code>OKX</code></p>
 
-<p>We have implemented logic to ensure that index fluctuations are within the normal range when there is a significant deviation from the price of a single exchange.</p>
+<p>For BTC-denominated currency pairs, the system multiplies by the OKX BTC-USD index to convert to the US dollar price.</p>
 
-<p>If an exchange price deviates by more than 3% relative to the median price of all exchanges, the weight that exchange is given will be reduced.</p>
+<p>We have implemented logic to ensure that index fluctuations are within the normal range when there is a significant deviation from the price of a single exchange. In addition, the system invalidates exchanges whose latest transaction price and trade volume have not been updated for a period of time.</p>
+
+<p>If an exchange price deviates by more than 3% relative to the median price of all exchanges, the exchange price will be calculated according to the <code>median*0.97</code> or the <code>median*1.03</code>.</p>
 <h2 id='oracle-price'>Oracle Price</h2>
 <p>The <code>Oracle Price</code> is an aggregate price calculated using multiple on-chain price oracles. Oracle prices are used to determine collateralization and liquidations on Satori.</p>
 
 <p>Since the oracle price is also an aggregate price, it offers similar protection from flash crashes as the index price does.</p>
 
-<p>For the Alpha launch, Satori runs its own oracle nodes on Layer 2.</p>
+<p>For the Alpha launch, Satori runs its own oracle nodes.</p>
 <h1 id='liquidations'>Liquidations</h1>
 <p>Positions where the margin rate is less than or equal to the maintenance margin rate may be liquidated.</p>
 <h2 id='closing-price'>Closing Price</h2>
@@ -600,6 +609,1213 @@
 <li><code>Bankruptcy value</code> is the value of position at the bankruptcy price</li>
 <li><code>Average opening value</code> is the the value of position at average opening price</li>
 </ul>
+<h1 id='websocket-api'>Websocket API</h1>
+<p>Satori offers a WebSocket API for streaming updates.</p>
+
+<ul>
+<li>Testing: ws://zk-test.satori.finance</li>
+<li>Production: ws://zk.satori.finance</li>
+</ul>
+<div class="highlight"><pre class="highlight java tab-java"><code><span class="o">&gt;</span> <span class="nc">Example</span>
+
+<span class="nc">JSONObject</span> <span class="n">params</span><span class="o">=</span><span class="k">new</span> <span class="nc">JSONObject</span><span class="o">();</span>
+            <span class="n">params</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"method"</span><span class="o">,</span><span class="s">"SUBSCRIBE"</span><span class="o">);</span>
+            <span class="n">params</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"event"</span><span class="o">,</span><span class="s">"api_account"</span><span class="o">);</span>
+            <span class="n">params</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"apiKey"</span><span class="o">,</span><span class="s">"ZPV45xgpL3ofaHLPicjA0D4PLgzPRlKd"</span><span class="o">);</span>
+            <span class="n">params</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"symbol"</span><span class="o">,</span><span class="s">"USDT"</span><span class="o">);</span>
+            <span class="c1">//params.put("period","1MIN");</span>
+            <span class="kt">long</span> <span class="n">time</span><span class="o">=</span><span class="k">new</span> <span class="nc">Date</span><span class="o">().</span><span class="na">getTime</span><span class="o">();</span>
+            <span class="n">params</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"timestamp"</span><span class="o">,</span><span class="n">time</span><span class="o">);</span>
+            <span class="nc">String</span> <span class="n">sha256</span> <span class="o">=</span> <span class="nc">HMacUtil</span><span class="o">.</span><span class="na">sha256</span><span class="o">(</span><span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">time</span><span class="o">),</span> <span class="s">"5928758659f61d099c191607b3ebdf07aabf1cf2"</span><span class="o">);</span>
+            <span class="n">params</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"signature"</span><span class="o">,</span><span class="n">sha256</span><span class="o">);</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">params</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">());</span>
+
+<span class="o">&gt;</span> <span class="nc">HMacUtil</span><span class="o">.</span><span class="na">java</span>
+<span class="kn">import</span> <span class="nn">javax.crypto.Mac</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.crypto.spec.SecretKeySpec</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.security.InvalidKeyException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.security.NoSuchAlgorithmException</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HMacUtil</span> <span class="o">{</span>
+
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">sha256</span><span class="o">(</span><span class="nc">String</span> <span class="n">message</span><span class="o">,</span><span class="nc">String</span> <span class="n">secret</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">InvalidKeyException</span><span class="o">,</span> <span class="nc">NoSuchAlgorithmException</span> <span class="o">{</span>
+        <span class="nc">Mac</span> <span class="n">sha256HMAC</span> <span class="o">=</span> <span class="nc">Mac</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="s">"HmacSHA256"</span><span class="o">);</span>
+        <span class="nc">SecretKeySpec</span> <span class="n">secret_key</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SecretKeySpec</span><span class="o">(</span><span class="n">secret</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(),</span> <span class="s">"HmacSHA256"</span><span class="o">);</span>
+        <span class="n">sha256HMAC</span><span class="o">.</span><span class="na">init</span><span class="o">(</span><span class="n">secret_key</span><span class="o">);</span>
+        <span class="k">return</span> <span class="nf">byteArrayToHexString</span><span class="o">(</span><span class="n">sha256HMAC</span><span class="o">.</span><span class="na">doFinal</span><span class="o">(</span><span class="n">message</span><span class="o">.</span><span class="na">getBytes</span><span class="o">()));</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">byteArrayToHexString</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">StringBuilder</span> <span class="n">hs</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuilder</span><span class="o">();</span>
+        <span class="nc">String</span> <span class="n">stmp</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">b</span><span class="o">!=</span><span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">b</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">n</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">stmp</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">toHexString</span><span class="o">(</span><span class="n">b</span><span class="o">[</span><span class="n">n</span><span class="o">]</span> <span class="o">&amp;</span> <span class="mh">0XFF</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">stmp</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span>
+                <span class="n">hs</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="sc">'0'</span><span class="o">);</span>
+            <span class="n">hs</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">stmp</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">hs</span><span class="o">.</span><span class="na">toString</span><span class="o">().</span><span class="na">toLowerCase</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><h1 id='subscriptions'>Subscriptions</h1><h3 id='subscribing-to-account-data'>Subscribing to Account Data</h3>
+<p>url: <code>${wsUrl}/api/account/ws</code></p>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="err">&gt;</span><span class="w"> </span><span class="err">Request</span><span class="w"> </span><span class="err">Example:</span><span class="w">
+</span><span class="p">{</span><span class="nl">"symbol"</span><span class="p">:</span><span class="s2">"MATIC"</span><span class="p">,</span><span class="nl">"method"</span><span class="p">:</span><span class="s2">"SUBSCRIBE"</span><span class="p">,</span><span class="nl">"apiKey"</span><span class="p">:</span><span class="s2">"5WlQeUYgKx85H8ID3XygdYVMOFjlXyw9"</span><span class="p">,</span><span class="nl">"signature"</span><span class="p">:</span><span class="s2">"1b883450a6bb3749729d429133fd06cec28215a6abcb876b08cc531ed86b7782"</span><span class="p">,</span><span class="nl">"event"</span><span class="p">:</span><span class="s2">"api_account"</span><span class="p">,</span><span class="nl">"timestamp"</span><span class="p">:</span><span class="mi">1657157345159</span><span class="p">}</span><span class="w">
+
+</span><span class="err">&gt;</span><span class="w"> </span><span class="err">Response</span><span class="w"> </span><span class="err">Example:</span><span class="w">
+</span><span class="p">{</span><span class="nl">"success"</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="nl">"msg"</span><span class="p">:</span><span class="s2">"subscribe success: api_account"</span><span class="p">,</span><span class="nl">"method"</span><span class="p">:</span><span class="s2">"SUBSCRIBE"</span><span class="p">,</span><span class="nl">"event"</span><span class="p">:</span><span class="s2">"api_account"</span><span class="p">}</span><span class="w">
+</span></code></pre></div><h4 id='request-parameters'>Request Parameters</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>method</td>
+<td>String</td>
+<td>√</td>
+<td>Methods - SUBSCRIBE, UNSUBSCRIBE</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td>√</td>
+<td>Event, see event table (api_account）</td>
+</tr>
+<tr>
+<td>apiKey</td>
+<td>String</td>
+<td>√</td>
+<td>API Key</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>Long</td>
+<td>√</td>
+<td>Time</td>
+</tr>
+<tr>
+<td>signature</td>
+<td>String</td>
+<td>√</td>
+<td>Signature</td>
+</tr>
+<tr>
+<td>symbol</td>
+<td>String</td>
+<td>√</td>
+<td>Asset symbol</td>
+</tr>
+</tbody></table>
+<h4 id='response-parameters'>Response Parameters</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>success</td>
+<td>Boolean</td>
+<td>√</td>
+<td>true,false</td>
+</tr>
+<tr>
+<td>msg</td>
+<td>String</td>
+<td>√</td>
+<td>Message</td>
+</tr>
+<tr>
+<td>method</td>
+<td>String</td>
+<td>√</td>
+<td>Methods - SUBSCRIBE，UNSUBSCRIBE</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td>√</td>
+<td>The same as the event parameter in the request. See the event table for details.</td>
+</tr>
+<tr>
+<td>symbol</td>
+<td>String</td>
+<td>√</td>
+<td>Asset symbol</td>
+</tr>
+</tbody></table>
+<h3 id='subscribing-to-orders'>Subscribing to Orders</h3>
+<p>url: <code>${wsUrl}/api/entrust/ws</code></p>
+<h4 id='request-parameters-2'>Request Parameters</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>method</td>
+<td>String</td>
+<td>√</td>
+<td>Methods - SUBSCRIBE，UNSUBSCRIBE</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td>√</td>
+<td>See event table (api_entrust) for details.</td>
+</tr>
+<tr>
+<td>apiKey</td>
+<td>String</td>
+<td>√</td>
+<td>API key</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>Long</td>
+<td>√</td>
+<td>Time</td>
+</tr>
+<tr>
+<td>signature</td>
+<td>String</td>
+<td>√</td>
+<td>Signature</td>
+</tr>
+<tr>
+<td>pair</td>
+<td>String</td>
+<td>√</td>
+<td>Trading Pair</td>
+</tr>
+</tbody></table>
+<h4 id='response-parameters-2'>Response Parameters</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>success</td>
+<td>Boolean</td>
+<td>√</td>
+<td>true,false</td>
+</tr>
+<tr>
+<td>msg</td>
+<td>String</td>
+<td>√</td>
+<td>Message</td>
+</tr>
+<tr>
+<td>method</td>
+<td>String</td>
+<td>√</td>
+<td>Methods - SUBSCRIBE，UNSUBSCRIBE</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td>√</td>
+<td>The same as the event parameter in the request. See the event table for details.</td>
+</tr>
+<tr>
+<td>pair</td>
+<td>String</td>
+<td>√</td>
+<td>Trading pair</td>
+</tr>
+</tbody></table>
+<h3 id='subscribing-to-positions'>Subscribing to Positions</h3>
+<p>url: <code>${wsUrl}/api/position/ws</code></p>
+<h4 id='request-parameters-3'>Request Parameters</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>method</td>
+<td>String</td>
+<td>√</td>
+<td>Methods - SUBSCRIBE，UNSUBSCRIBE</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td>√</td>
+<td>See the event table (api_position) for details.</td>
+</tr>
+<tr>
+<td>apiKey</td>
+<td>String</td>
+<td>√</td>
+<td>API key</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>Long</td>
+<td>√</td>
+<td>Time</td>
+</tr>
+<tr>
+<td>signature</td>
+<td>String</td>
+<td>√</td>
+<td>Signature</td>
+</tr>
+<tr>
+<td>pair</td>
+<td>String</td>
+<td>√</td>
+<td>Trading pair</td>
+</tr>
+</tbody></table>
+<h4 id='response-parameters-3'>Response Parameters</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>success</td>
+<td>Boolean</td>
+<td>√</td>
+<td>true,false</td>
+</tr>
+<tr>
+<td>msg</td>
+<td>String</td>
+<td>√</td>
+<td>Message</td>
+</tr>
+<tr>
+<td>method</td>
+<td>String</td>
+<td>√</td>
+<td>Methods - SUBSCRIBE，UNSUBSCRIBE</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td>√</td>
+<td>The same as the event parameter in the request. See the event table for details.</td>
+</tr>
+<tr>
+<td>pair</td>
+<td>String</td>
+<td>√</td>
+<td>Trading pair</td>
+</tr>
+</tbody></table>
+<h3 id='subscribing-to-kline-data'>Subscribing to Kline Data</h3>
+<p>url: <code>${wsUrl}/api/kline/ws</code></p>
+<h4 id='request-parameters-4'>Request Parameters</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>method</td>
+<td>String</td>
+<td>√</td>
+<td>Methods - SUBSCRIBE，UNSUBSCRIBE</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td>√</td>
+<td>Check event table （api_kline）</td>
+</tr>
+<tr>
+<td>apiKey</td>
+<td>String</td>
+<td>√</td>
+<td>API key</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>Long</td>
+<td>√</td>
+<td>Time</td>
+</tr>
+<tr>
+<td>signature</td>
+<td>String</td>
+<td>√</td>
+<td>Signature</td>
+</tr>
+<tr>
+<td>pair</td>
+<td>String</td>
+<td>√</td>
+<td>Trading pair</td>
+</tr>
+<tr>
+<td>period</td>
+<td>String</td>
+<td>√</td>
+<td>Check the periodEnum table</td>
+</tr>
+</tbody></table>
+<h4 id='response-parameters-4'>Response Parameters</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>success</td>
+<td>Boolean</td>
+<td>√</td>
+<td>true,false</td>
+</tr>
+<tr>
+<td>msg</td>
+<td>String</td>
+<td>√</td>
+<td>Message</td>
+</tr>
+<tr>
+<td>method</td>
+<td>String</td>
+<td>√</td>
+<td>Methods - SUBSCRIBE，UNSUBSCRIBE</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td>√</td>
+<td>The same as the event parameter in the request. See the event table for details.</td>
+</tr>
+<tr>
+<td>pair</td>
+<td>String</td>
+<td>√</td>
+<td>Trading pair</td>
+</tr>
+<tr>
+<td>period</td>
+<td>String</td>
+<td>√</td>
+<td>Check the periodEnum table</td>
+</tr>
+</tbody></table>
+<h3 id='subscribing-to-market-data'>Subscribing to Market Data</h3>
+<p>url: <code>${wsUrl}/api/depth/ws</code></p>
+<h4 id='request-parameters-5'>Request Parameters</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>method</td>
+<td>String</td>
+<td>√</td>
+<td>Methods - SUBSCRIBE，UNSUBSCRIBE</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td>√</td>
+<td>See event table（api_depth）</td>
+</tr>
+<tr>
+<td>apiKey</td>
+<td>String</td>
+<td>√</td>
+<td>API key</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>Long</td>
+<td>√</td>
+<td>Time</td>
+</tr>
+<tr>
+<td>signature</td>
+<td>String</td>
+<td>√</td>
+<td>Signature</td>
+</tr>
+<tr>
+<td>pair</td>
+<td>String</td>
+<td>√</td>
+<td>Trading pair</td>
+</tr>
+</tbody></table>
+<h4 id='response-parameters-5'>Response parameters</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>success</td>
+<td>Boolean</td>
+<td>√</td>
+<td>true,false</td>
+</tr>
+<tr>
+<td>msg</td>
+<td>String</td>
+<td>√</td>
+<td>msg</td>
+</tr>
+<tr>
+<td>method</td>
+<td>String</td>
+<td>√</td>
+<td>Methods - SUBSCRIBE，UNSUBSCRIBE</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td>√</td>
+<td>The same as the event parameter in the request. See the event table for details.</td>
+</tr>
+</tbody></table>
+<h3 id='subscribing-to-trading-data'>Subscribing to Trading Data</h3>
+<p>url: <code>${wsUrl}/api/trans/ws</code></p>
+<h4 id='request-parameters-6'>Request Parameters</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>method</td>
+<td>String</td>
+<td>√</td>
+<td>Methods - SUBSCRIBE，UNSUBSCRIBE</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td>√</td>
+<td>See event table （api_trade）</td>
+</tr>
+<tr>
+<td>apiKey</td>
+<td>String</td>
+<td>√</td>
+<td>API key</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>Long</td>
+<td>√</td>
+<td>Time</td>
+</tr>
+<tr>
+<td>signature</td>
+<td>String</td>
+<td>√</td>
+<td>Signature</td>
+</tr>
+<tr>
+<td>pair</td>
+<td>String</td>
+<td>√</td>
+<td>Trading pair</td>
+</tr>
+<tr>
+<td>period</td>
+<td>String</td>
+<td>√</td>
+<td>Check the periodEnum table</td>
+</tr>
+</tbody></table>
+<h4 id='response-parameters-6'>Response parameters</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>success</td>
+<td>Boolean</td>
+<td>√</td>
+<td>true,false</td>
+</tr>
+<tr>
+<td>msg</td>
+<td>String</td>
+<td>√</td>
+<td>msg</td>
+</tr>
+<tr>
+<td>method</td>
+<td>String</td>
+<td>√</td>
+<td>Methods - SUBSCRIBE，UNSUBSCRIBE</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td>√</td>
+<td>The same as the event parameter in the request. See the event table for details.</td>
+</tr>
+<tr>
+<td>pair</td>
+<td>String</td>
+<td>√</td>
+<td>Trading pair</td>
+</tr>
+</tbody></table>
+<h2 id='updates'>Updates</h2><h3 id='account-update'>Account Update</h3><div class="highlight"><pre class="highlight json tab-json"><code><span class="err">&gt;</span><span class="w"> </span><span class="err">Example</span><span class="w"> </span><span class="err">response</span><span class="w">
+</span><span class="p">{</span><span class="nl">"data"</span><span class="p">:{</span><span class="nl">"availableAmount"</span><span class="p">:</span><span class="s2">"8000"</span><span class="p">,</span><span class="nl">"coinId"</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span><span class="nl">"frozenAmount"</span><span class="p">:</span><span class="s2">"0"</span><span class="p">,</span><span class="nl">"logId"</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span><span class="nl">"operateAmount"</span><span class="p">:</span><span class="s2">"0.00"</span><span class="p">,</span><span class="nl">"symbol"</span><span class="p">:</span><span class="s2">"DOT"</span><span class="p">,</span><span class="nl">"coinId"</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span><span class="nl">"event"</span><span class="p">:</span><span class="s2">"api_account"</span><span class="p">,</span><span class="nl">"success"</span><span class="p">:</span><span class="kc">true</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>data</td>
+<td>Object</td>
+<td></td>
+<td>Account information</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td></td>
+<td>See event table (api_account)</td>
+</tr>
+<tr>
+<td>success</td>
+<td>Boolean</td>
+<td></td>
+<td>true,false</td>
+</tr>
+</tbody></table>
+<h4 id='data'>Data</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>availableAmount</td>
+<td>String</td>
+<td></td>
+<td>Available amount</td>
+</tr>
+<tr>
+<td>frozenAmount</td>
+<td>String</td>
+<td></td>
+<td>Frozen Amount</td>
+</tr>
+<tr>
+<td>logId</td>
+<td>Long</td>
+<td></td>
+<td>Log ID</td>
+</tr>
+<tr>
+<td>operateAmount</td>
+<td>String</td>
+<td></td>
+<td>Operating amount</td>
+</tr>
+<tr>
+<td>symbol</td>
+<td>String</td>
+<td></td>
+<td>Asset symbol</td>
+</tr>
+<tr>
+<td>coinId</td>
+<td>Long</td>
+<td></td>
+<td>Coin ID</td>
+</tr>
+</tbody></table>
+<h3 id='order-update'>Order Update</h3>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>data</td>
+<td>Object</td>
+<td></td>
+<td>Account information</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td></td>
+<td>See event table(api_entrust)</td>
+</tr>
+<tr>
+<td>success</td>
+<td>Boolean</td>
+<td></td>
+<td>true,false</td>
+</tr>
+</tbody></table>
+<h4 id='data-2'>Data</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>currentEntrustId</td>
+<td>Long</td>
+<td></td>
+<td>Order ID</td>
+</tr>
+<tr>
+<td>changeType</td>
+<td>String</td>
+<td></td>
+<td>Type：ENTRUST；NEW；TRADE；CANCELED</td>
+</tr>
+<tr>
+<td>dealQuantity</td>
+<td>String</td>
+<td></td>
+<td>Quantity already traded</td>
+</tr>
+<tr>
+<td>direction</td>
+<td>String</td>
+<td></td>
+<td>LONG or SHORT</td>
+</tr>
+<tr>
+<td>lever</td>
+<td>Integer</td>
+<td></td>
+<td>Leverage</td>
+</tr>
+<tr>
+<td>price</td>
+<td>String</td>
+<td></td>
+<td>Price</td>
+</tr>
+<tr>
+<td>quantity</td>
+<td>String</td>
+<td></td>
+<td>Quantity</td>
+</tr>
+<tr>
+<td>symbol</td>
+<td>String</td>
+<td></td>
+<td>Asset symbol</td>
+</tr>
+<tr>
+<td>nowDealQuantity</td>
+<td>String</td>
+<td></td>
+<td>Currently traded quantity</td>
+</tr>
+<tr>
+<td>isClose</td>
+<td>Boolean</td>
+<td></td>
+<td>true (closing position);false (opening position);</td>
+</tr>
+<tr>
+<td>contractPairId</td>
+<td>Long</td>
+<td></td>
+<td>Trading pair ID</td>
+</tr>
+<tr>
+<td>dealAmount</td>
+<td>String</td>
+<td></td>
+<td>Amount already traded</td>
+</tr>
+<tr>
+<td>matchType</td>
+<td>Integer</td>
+<td></td>
+<td>1 GTC；2 IOC；3 FOK；4 POST_ONLY ；</td>
+</tr>
+<tr>
+<td>clientOrderId</td>
+<td>String</td>
+<td></td>
+<td>Client Order ID</td>
+</tr>
+</tbody></table>
+<h3 id='position-update'>Position Update</h3>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>data</td>
+<td>Object</td>
+<td></td>
+<td>Account information</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td></td>
+<td>See event table (api_position)</td>
+</tr>
+<tr>
+<td>success</td>
+<td>Boolean</td>
+<td></td>
+<td>true,false</td>
+</tr>
+</tbody></table>
+<h4 id='data-3'>Data</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>changeType</td>
+<td>String</td>
+<td></td>
+<td>Type：NEW; INCREASE; CLOSE; LIQUIDATE; REDUCE;</td>
+</tr>
+<tr>
+<td>currentQuantity</td>
+<td>String</td>
+<td></td>
+<td>Updated quantity</td>
+</tr>
+<tr>
+<td>direction</td>
+<td>String</td>
+<td></td>
+<td>LONG or SHORT</td>
+</tr>
+<tr>
+<td>operateQuantity</td>
+<td>String</td>
+<td></td>
+<td>Changed quantity</td>
+</tr>
+<tr>
+<td>positionId</td>
+<td>Long</td>
+<td></td>
+<td>Position record ID</td>
+</tr>
+<tr>
+<td>symbol</td>
+<td>String</td>
+<td></td>
+<td>Trading symbol</td>
+</tr>
+<tr>
+<td>canClosedQuantity</td>
+<td>String</td>
+<td></td>
+<td>Available quantity to close</td>
+</tr>
+<tr>
+<td>contractPairId</td>
+<td>Long</td>
+<td></td>
+<td>Trading pair ID</td>
+</tr>
+<tr>
+<td>positionType</td>
+<td>Integer</td>
+<td></td>
+<td>Position Type</td>
+</tr>
+</tbody></table>
+<h3 id='kline-update'>Kline Update</h3>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>data</td>
+<td>Object</td>
+<td></td>
+<td>Account information</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td></td>
+<td>See event table (api_kline)</td>
+</tr>
+<tr>
+<td>success</td>
+<td>Boolean</td>
+<td></td>
+<td>true,false</td>
+</tr>
+</tbody></table>
+<h4 id='data-4'>Data</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>amount</td>
+<td>BigDecimal</td>
+<td></td>
+<td>Amount</td>
+</tr>
+<tr>
+<td>close</td>
+<td>BigDecimal</td>
+<td></td>
+<td>Closing price</td>
+</tr>
+<tr>
+<td>count</td>
+<td>Integer</td>
+<td></td>
+<td>Number of transactions</td>
+</tr>
+<tr>
+<td>high</td>
+<td>BigDecimal</td>
+<td></td>
+<td>Highest price</td>
+</tr>
+<tr>
+<td>low</td>
+<td>BigDecimal</td>
+<td></td>
+<td>Lowest price</td>
+</tr>
+<tr>
+<td>open</td>
+<td>BigDecimal</td>
+<td></td>
+<td>Opening price</td>
+</tr>
+<tr>
+<td>period</td>
+<td>String</td>
+<td></td>
+<td>Time interval</td>
+</tr>
+<tr>
+<td>quantity</td>
+<td>BigDecimal</td>
+<td></td>
+<td>Trading quantity</td>
+</tr>
+<tr>
+<td>time</td>
+<td>Long</td>
+<td></td>
+<td>Kline start time</td>
+</tr>
+<tr>
+<td>contractPairId</td>
+<td>Long</td>
+<td></td>
+<td>Contract trading pair IDs</td>
+</tr>
+</tbody></table>
+<h3 id='market-depth-update'>Market Depth Update</h3><div class="highlight"><pre class="highlight json tab-json"><code><span class="err">&gt;</span><span class="w"> </span><span class="err">Example</span><span class="w">
+</span><span class="p">{</span><span class="nl">"data"</span><span class="p">:{</span><span class="nl">"asks"</span><span class="p">:[{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"8.291"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"20.163055"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"8.302"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"27.074094"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"8.33"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"16.12535"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"8.333"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"7.617261"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"8.347"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"7.274368"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"8.36"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"29.826174"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"8.385"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"6.084978"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"8.402"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"13.370699"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"9.16"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"16.669687"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"9.182"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"115.09525"</span><span class="p">}],</span><span class="nl">"bids"</span><span class="p">:[{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"7.794"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"7.979346"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"7.783"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"24.131828"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"7.765"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"16.167428"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"7.76"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"21.880696"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"7.755"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"14.01524"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"7.754"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"4.673284"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"7.73"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"16.060928"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"7.707"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"25.653437"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"7.705"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"20.066533"</span><span class="p">},{</span><span class="nl">"price"</span><span class="p">:</span><span class="s2">"7.686"</span><span class="p">,</span><span class="nl">"quantity"</span><span class="p">:</span><span class="s2">"19.35628"</span><span class="p">}]},</span><span class="nl">"event"</span><span class="p">:</span><span class="s2">"api_depth"</span><span class="p">,</span><span class="nl">"pair"</span><span class="p">:</span><span class="s2">"DOT-USDT"</span><span class="p">,</span><span class="nl">"success"</span><span class="p">:</span><span class="kc">true</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>data</td>
+<td>Object</td>
+<td></td>
+<td>Account information</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td></td>
+<td>See event table(api_depth)</td>
+</tr>
+<tr>
+<td>success</td>
+<td>Boolean</td>
+<td></td>
+<td>true,false</td>
+</tr>
+</tbody></table>
+<h4 id='data-5'>data</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>asks</td>
+<td>List</td>
+<td></td>
+<td>List of asks</td>
+</tr>
+<tr>
+<td>bids</td>
+<td>List</td>
+<td></td>
+<td>List of bids</td>
+</tr>
+</tbody></table>
+<h4 id='asks'>asks</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>price</td>
+<td>String</td>
+<td></td>
+<td>Price</td>
+</tr>
+<tr>
+<td>quantity</td>
+<td>String</td>
+<td></td>
+<td>Quantity</td>
+</tr>
+</tbody></table>
+<h4 id='bids'>bids</h4>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>price</td>
+<td>String</td>
+<td></td>
+<td>Price</td>
+</tr>
+<tr>
+<td>quantity</td>
+<td>String</td>
+<td></td>
+<td>Quantity</td>
+</tr>
+</tbody></table>
+<h3 id='trade-data-update'>Trade Data Update</h3>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>data</td>
+<td>Object</td>
+<td></td>
+<td>Account information</td>
+</tr>
+<tr>
+<td>event</td>
+<td>String</td>
+<td></td>
+<td>See event table(api_trade)</td>
+</tr>
+<tr>
+<td>success</td>
+<td>Boolean</td>
+<td></td>
+<td>true,false</td>
+</tr>
+</tbody></table>
+<h3 id='data-6'>Data</h3>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>contractMatchPairId</td>
+<td>long</td>
+<td></td>
+<td>Match record ID</td>
+</tr>
+<tr>
+<td>pair</td>
+<td>String</td>
+<td></td>
+<td>Trading pair</td>
+</tr>
+<tr>
+<td>price</td>
+<td>BigDecimal</td>
+<td></td>
+<td>Price</td>
+</tr>
+<tr>
+<td>quantity</td>
+<td>BigDecimal</td>
+<td></td>
+<td>Quantity</td>
+</tr>
+<tr>
+<td>amount</td>
+<td>BigDecimal</td>
+<td></td>
+<td>Trading amount</td>
+</tr>
+<tr>
+<td>isLong</td>
+<td>Boolean</td>
+<td></td>
+<td>true or false</td>
+</tr>
+<tr>
+<td>time</td>
+<td>String</td>
+<td></td>
+<td>Creation time</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>Long</td>
+<td></td>
+<td>Time</td>
+</tr>
+<tr>
+<td>contractPairId</td>
+<td>Long</td>
+<td></td>
+<td>Trading pair ID</td>
+</tr>
+</tbody></table>
+<h3 id='tables'>Tables</h3><h4 id='periodenum'>periodEnum</h4>
+<p>periodEnum represents the time periods for data used in the API.</p>
+
+<p>| Parameter|
+  | ------- |
+  | 1SECOND |
+  | 1MIN    |
+  | 3MIN    |
+  | 5MIN    |
+  | 15MIN   |
+  | 30MIN   |
+  | 1HOUR   |
+  | 4HOUR   |
+  | 8HOUR   |
+  | 12HOUR  |
+  | 1DAY    |
+  | 1WEEK   |
+  | 1MONTH  |
+  | 1YEAR   |</p>
+<h4 id='events'>events</h4>
+<p>| Subscription |
+ | ------------ |
+ | api_entrust  |
+ | api_position |
+ | api_kline    |
+ | api_depth    |
+ | api_trade    |
+ | api_account  |</p>
+
+<p>| Subscription     |
+ | ---------------- |
+ | api_entrust_res  |
+ | api_position_res |
+ | api_kline_res    |
+ | api_depth_res    |
+ | api_trade_res    |
+ | api_account_res  |</p>
 
 <!-- ```ruby
 require 'kittn'
