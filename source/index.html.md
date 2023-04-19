@@ -19,39 +19,15 @@ meta:
 
 # Introduction
 
-Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized financial derivatives platform built on Polkadot. It features an order book model in collaboration with many market makers to provide comprehensive exposure to a wide range of assets, and an “off-chain aggregation and on-chain settlement” design that combines the security and transparency of a decentralized exchange, with the speed and usability of a centralized exchange.
+Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized financial derivatives platform built on Polygon zkEVM, zkSync, and Scroll. It features an order book model in collaboration with many market makers to provide comprehensive exposure to a wide range of assets, and an “off-chain aggregation and on-chain settlement” design that combines the security and transparency of a decentralized exchange, with the speed and usability of a centralized exchange.
 
 # User funds
 
 ## Adding Funds
-Users can directly use USDT to trade on the Satori exchange, but can also optionally use DOT or accepted forms of synthetic DOT as collateral to borrow USD equivalent to trade on the Satori exchange.
-
-### DeFi Loan
-Users can use DOT or synthetic DOT to trade on the Satori platform with the "DeFi Loan" functionality. More specifically, users can pledge DOT or synthetic DOT to Satori's loan contracts in order to mint Satori's platform coins (displayed as USDT).
-
-The collateral ratio is currently set to `65%`, and there is an extra safety factor of `2%`, which means the highest possible borrowing rate is `63%`.
-
-There is a daily interest rate of `0.025%` on the loan, charged every second.
-
-### Loan Liquidation
-The health factor is defined as follows:
-<aside class="formula">
-  <code>
-    Health Factor = (Total Collateral Value * Collateral Ratio) / (Loan Amount + Loan Interest)
-  </code>
-</aside>
-
-The lending ratio is defined as follows:
-<aside class="formula">
-  <code>
-    Lending Ratio = Loan Amount / (Total Collateral Value - Interest on Loan)
-  </code>
-</aside>
-
-If both the health factor falls below 1 and the lending ratio exceeds the collateral ratio, then the loan will be subject to liquidation.
+Users can directly deposit USDT to trade on the Satori exchange.
 
 ## Withdrawing Funds
-Users can return the principal and any accrued interest to redeem the corresponding amount of the collateral. Users can also withdraw their funds in USDT at any point.
+Users can withdraw their funds in USDT at any point.
 
 # Perpetuals
 
@@ -89,7 +65,7 @@ The maintenance margin rates are determined on a per-token-pair basis:
 | ----- | ----------------------- |
 | BTC   | 0.5%                    |
 | ETH   | 0.5%                    |
-| DOT   | 0.5%                    |
+| MATIC | 0.5%                    |
 
 For example, a long leveraged position in BTC-USDT may be liquidated after the mark price dips below 0.5% above the bankruptcy price.
 
@@ -145,7 +121,7 @@ The fees are differentiated between whether or not the user was a maker or taker
 | ----- | ---------- | ---------- |
 | BTC   | 0.04%      | 0.06%      |
 | ETH   | 0.04%      | 0.06%      |
-| DOT   | 0.04%      | 0.06%      |
+| MATIC | 0.04%      | 0.06%      |
 
 ## Index Price
 
@@ -153,27 +129,29 @@ The `Index Price` refers to the price of the underlying asset on the spot market
 
 The exchanges we aggregate from are as follows for each market:
 
-#### BTC-USDT
+#### BTC-USD
 
-`Okex`
+`Coinbase`
 `Binance`
-`Huobi`
+`OKX`
 
-#### ETH-USDT
+#### ETH-USD
 
-`Okex`
+`Coinbase`
 `Binance`
-`Huobi`
+`OKX`
 
-#### DOT-USDT
+#### MATIC-USD
 
-`Okex`
+`Coinbase`
 `Binance`
-`Huobi`
+`OKX`
 
-We have implemented logic to ensure that index fluctuations are within the normal range when there is a significant deviation from the price of a single exchange.
+For BTC-denominated currency pairs, the system multiplies by the OKX BTC-USD index to convert to the US dollar price.
 
-If an exchange price deviates by more than 3% relative to the median price of all exchanges, the weight that exchange is given will be reduced.
+We have implemented logic to ensure that index fluctuations are within the normal range when there is a significant deviation from the price of a single exchange. In addition, the system invalidates exchanges whose latest transaction price and trade volume have not been updated for a period of time.
+
+If an exchange price deviates by more than 3% relative to the median price of all exchanges, the exchange price will be calculated according to the `median*0.97` or the `median*1.03`.
 
 ## Oracle Price
 
@@ -181,7 +159,7 @@ The `Oracle Price` is an aggregate price calculated using multiple on-chain pric
 
 Since the oracle price is also an aggregate price, it offers similar protection from flash crashes as the index price does.
 
-For the Alpha launch, Satori runs its own oracle nodes on Layer 2.
+For the Alpha launch, Satori runs its own oracle nodes.
 
 # Liquidations
 
@@ -240,6 +218,416 @@ Where:
 - `Mark value` is the value of the position at the mark price
 - `Bankruptcy value` is the value of position at the bankruptcy price
 - `Average opening value` is the the value of position at average opening price
+
+# Websocket API
+
+Satori offers a WebSocket API for streaming updates.
+
+- Testing: ws://zk-test.satori.finance
+- Production: ws://zk.satori.finance
+
+
+```java
+> Example
+
+JSONObject params=new JSONObject();
+            params.put("method","SUBSCRIBE");
+            params.put("event","api_account");
+            params.put("apiKey","ZPV45xgpL3ofaHLPicjA0D4PLgzPRlKd");
+            params.put("symbol","USDT");
+			//params.put("period","1MIN");
+            long time=new Date().getTime();
+            params.put("timestamp",time);
+            String sha256 = HMacUtil.sha256(String.valueOf(time), "5928758659f61d099c191607b3ebdf07aabf1cf2");
+            params.put("signature",sha256);
+            System.out.println(params.toJSONString());
+
+> HMacUtil.java
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+public class HMacUtil {
+
+
+    public static String sha256(String message,String secret) throws InvalidKeyException, NoSuchAlgorithmException {
+        Mac sha256HMAC = Mac.getInstance("HmacSHA256");
+        SecretKeySpec secret_key = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
+        sha256HMAC.init(secret_key);
+        return byteArrayToHexString(sha256HMAC.doFinal(message.getBytes()));
+    }
+
+    private static String byteArrayToHexString(byte[] b) {
+        StringBuilder hs = new StringBuilder();
+        String stmp;
+        for (int n = 0; b!=null && n < b.length; n++) {
+            stmp = Integer.toHexString(b[n] & 0XFF);
+            if (stmp.length() == 1)
+                hs.append('0');
+            hs.append(stmp);
+        }
+        return hs.toString().toLowerCase();
+    }
+}
+```
+# Subscriptions
+### Subscribing to Account Data
+
+url: `${wsUrl}/api/account/ws`
+
+
+```json
+> Request Example:
+{"symbol":"MATIC","method":"SUBSCRIBE","apiKey":"5WlQeUYgKx85H8ID3XygdYVMOFjlXyw9","signature":"1b883450a6bb3749729d429133fd06cec28215a6abcb876b08cc531ed86b7782","event":"api_account","timestamp":1657157345159}
+
+> Response Example:
+{"success":true,"msg":"subscribe success: api_account","method":"SUBSCRIBE","event":"api_account"}
+```
+
+#### Request Parameters
+
+| Field     | Type   | Required | Description                               |
+| --------- | ------ | -------- | ----------------------------------------- |
+| method    | String | √        | Methods - SUBSCRIBE, UNSUBSCRIBE          |
+| event     | String | √        | Event, see event table (api_account）     |
+| apiKey    | String | √        | API Key                                   |
+| timestamp | Long   | √        | Time                                      |
+| signature | String | √        | Signature                                 |
+| symbol    | String | √        | Asset symbol                              |
+
+#### Response Parameters
+
+| Field   | Type    | Required | Description                                    |
+| ------- | ------- | -------- | ---------------------------------------------- |
+| success | Boolean | √        | true,false                                     |
+| msg     | String  | √        | Message                                        |
+| method  | String  | √        | Methods - SUBSCRIBE，UNSUBSCRIBE               |
+| event   | String  | √        | The same as the event parameter in the request. See the event table for details. |
+| symbol  | String  | √        | Asset symbol                                   |
+
+### Subscribing to Orders
+
+url: `${wsUrl}/api/entrust/ws`
+
+#### Request Parameters
+
+| Field     | Type    | Required | Description                               |
+| --------- | ------ | -------- | ------------------------------------------ |
+| method    | String | √        | Methods - SUBSCRIBE，UNSUBSCRIBE           |
+| event     | String | √        | See event table (api_entrust) for details. |
+| apiKey    | String | √        | API key                                    |
+| timestamp | Long   | √        | Time                                       |
+| signature | String | √        | Signature                                  |
+| pair      | String | √        | Trading Pair                               |
+
+#### Response Parameters
+
+| Field   | Type    | Required | Description                                    |
+| ------- | ------- | -------- | ---------------------------------------------- |
+| success | Boolean | √        | true,false                                     |
+| msg     | String  | √        | Message                                        |
+| method  | String  | √        | Methods - SUBSCRIBE，UNSUBSCRIBE               |
+| event   | String  | √        | The same as the event parameter in the request. See the event table for details. |
+| pair    | String  | √        | Trading pair                                   |
+
+### Subscribing to Positions
+
+url: `${wsUrl}/api/position/ws`
+
+#### Request Parameters
+
+| Field     | Type   | Required | Description                                    |
+| --------- | ------ | -------- | ---------------------------------------------- |
+| method    | String | √        | Methods - SUBSCRIBE，UNSUBSCRIBE               |
+| event     | String | √        | See the event table (api_position) for details.|
+| apiKey    | String | √        | API key                                        |
+| timestamp | Long   | √        | Time                                           |
+| signature | String | √        | Signature                                      |
+| pair      | String | √        | Trading pair                                   |
+
+#### Response Parameters
+
+| Field   | Type    | Required | Description                                    |
+| ------- | ------- | -------- | ---------------------------------------------- |
+| success | Boolean | √        | true,false                                     |
+| msg     | String  | √        | Message                                        |
+| method  | String  | √        | Methods - SUBSCRIBE，UNSUBSCRIBE               |
+| event   | String  | √        | The same as the event parameter in the request. See the event table for details. |
+| pair    | String  | √        | Trading pair                                   |
+
+### Subscribing to Kline Data
+
+url: `${wsUrl}/api/kline/ws`
+
+#### Request Parameters
+
+| Field     | Type   | Required | Description                                |
+| --------- | ------ | -------- | ------------------------------------------ |
+| method    | String | √        | Methods - SUBSCRIBE，UNSUBSCRIBE           |
+| event     | String | √        | Check event table （api_kline）            |
+| apiKey    | String | √        | API key                                    |
+| timestamp | Long   | √        | Time                                       |
+| signature | String | √        | Signature                                  |
+| pair      | String | √        | Trading pair                               |
+| period    | String | √        | Check the periodEnum table                 |
+
+#### Response Parameters
+
+| Field   | Type    | Required | Description                                    |
+| ------- | ------- | -------- | ---------------------------------------------- |
+| success | Boolean | √        | true,false                                     |
+| msg     | String  | √        | Message                                        |
+| method  | String  | √        | Methods - SUBSCRIBE，UNSUBSCRIBE               |
+| event   | String  | √        | The same as the event parameter in the request. See the event table for details. |
+| pair    | String  | √        | Trading pair                                   |
+| period  | String  | √        | Check the periodEnum table                     |
+
+### Subscribing to Market Data
+
+url: `${wsUrl}/api/depth/ws`
+
+#### Request Parameters
+
+| Field     | Type   | Required | Description                                |
+| --------- | ------ | -------- | ------------------------------------------ |
+| method    | String | √        | Methods - SUBSCRIBE，UNSUBSCRIBE           |
+| event     | String | √        | See event table（api_depth）               |
+| apiKey    | String | √        | API key                                    |
+| timestamp | Long   | √        | Time                                       |
+| signature | String | √        | Signature                                  |
+| pair      | String | √        | Trading pair                               |
+
+#### Response parameters
+
+| Field   | Type    | Required | Description                                    |
+| ------- | ------- | -------- | ---------------------------------------------- |
+| success | Boolean | √        | true,false                                     |
+| msg     | String  | √        | msg                                            |
+| method  | String  | √        | Methods - SUBSCRIBE，UNSUBSCRIBE               |
+| event   | String  | √        | The same as the event parameter in the request. See the event table for details. |
+
+### Subscribing to Trading Data
+
+ url: `${wsUrl}/api/trans/ws`
+
+#### Request Parameters
+
+| Field     | Type   | Required | Description                                 |
+| --------- | ------ | -------- | ------------------------------------------- |
+| method    | String | √        | Methods - SUBSCRIBE，UNSUBSCRIBE            |
+| event     | String | √        | See event table （api_trade）             |
+| apiKey    | String | √        | API key                                     |
+| timestamp | Long   | √        | Time                                        |
+| signature | String | √        | Signature                                   |
+| pair      | String | √        | Trading pair                                |
+| period    | String | √        | Check the periodEnum table                  |
+
+#### Response parameters
+
+| Field   | Type    | Required | Description                                    |
+| ------- | ------- | -------- | ---------------------------------------------- |
+| success | Boolean | √        | true,false                                     |
+| msg     | String  | √        | msg                                            |
+| method  | String  | √        | Methods - SUBSCRIBE，UNSUBSCRIBE               |
+| event   | String  | √        | The same as the event parameter in the request. See the event table for details. |
+| pair    | String  | √        | Trading pair                                   |
+
+## Updates
+### Account Update
+
+```json
+> Example response
+{"data":{"availableAmount":"8000","coinId":5,"frozenAmount":"0","logId":8,"operateAmount":"0.00","symbol":"DOT","coinId":0},"event":"api_account","success":true}
+```
+
+| Field   | Type    | Required | Description                     |
+| ------- | ------- | -------- | ------------------------------- |
+| data    | Object  |          | Account information             |
+| event   | String  |          | See event table (api_account)   |
+| success | Boolean |          | true,false                      |
+
+#### Data
+
+| Field           | Type   | Required | Description                              |
+| --------------- | ------ | -------- | -----------------------------------------|
+| availableAmount | String |          | Available amount                         |
+| frozenAmount    | String |          | Frozen Amount                            |
+| logId           | Long   |          | Log ID                                   |
+| operateAmount   | String |          | Operating amount                         |
+| symbol          | String |          | Asset symbol                             |
+| coinId          | Long   |          | Coin ID                                  |
+
+### Order Update
+
+| Field   | Type    | Required | Description                     |
+| ------- | ------- | -------- | ------------------------------- |
+| data    | Object  |          | Account information             |
+| event   | String  |          | See event table(api_entrust)    |
+| success | Boolean |          | true,false                      |
+
+#### Data
+
+| Field            | Type    | Required | Description                            |
+| ---------------- | ------- | -------- | -------------------------------------- |
+| currentEntrustId | Long    |          | Order ID                               |
+| changeType       | String  |          | Type：ENTRUST；NEW；TRADE；CANCELED     |
+| dealQuantity     | String  |          | Quantity already traded                |
+| direction        | String  |          | LONG or SHORT                          |
+| lever            | Integer |          | Leverage                               |
+| price            | String  |          | Price                                  |
+| quantity         | String  |          | Quantity                               |
+| symbol           | String  |          | Asset symbol                           |
+| nowDealQuantity  | String  |          | Currently traded quantity              |
+| isClose          | Boolean |          | true (closing position);false (opening position); |
+| contractPairId   | Long    |          | Trading pair ID                        |
+| dealAmount       | String  |          | Amount already traded                  |
+| matchType        | Integer |          | 1 GTC；2 IOC；3 FOK；4 POST_ONLY ；    |
+| clientOrderId    | String  |          | Client Order ID                        |
+
+### Position Update
+
+| Field   | Type    | Required | Description                      |
+| ------- | ------- | -------- | -------------------------------- |
+| data    | Object  |          | Account information              |
+| event   | String  |          | See event table (api_position)   |
+| success | Boolean |          | true,false                       |
+
+#### Data
+
+| Field             | Type    | Required | Description                           |
+| ----------------- | ------- | -------- | ------------------------------------- |
+| changeType        | String  |          | Type：NEW; INCREASE; CLOSE; LIQUIDATE; REDUCE; |
+| currentQuantity   | String  |          | Updated quantity                      |
+| direction         | String  |          | LONG or SHORT                         |
+| operateQuantity   | String  |          | Changed quantity                      |
+| positionId        | Long    |          | Position record ID                    |
+| symbol            | String  |          | Trading symbol                        |
+| canClosedQuantity | String  |          | Available quantity to close           |
+| contractPairId    | Long    |          | Trading pair ID                       |
+| positionType      | Integer |          | Position Type                         |
+
+### Kline Update
+
+| Field   | Type    | Required | Description                      |
+| ------- | ------- | -------- | -------------------------------- |
+| data    | Object  |          | Account information              |
+| event   | String  |          | See event table (api_kline)      |
+| success | Boolean |          | true,false                       |
+
+#### Data
+
+| Field          | Type       | Required | Description                          |
+| -------------- | ---------- | -------- | ------------------------------------ |
+| amount         | BigDecimal |          | Amount                               |
+| close          | BigDecimal |          | Closing price                        |
+| count          | Integer    |          | Number of transactions               |
+| high           | BigDecimal |          | Highest price                        |
+| low            | BigDecimal |          | Lowest price                         |
+| open           | BigDecimal |          | Opening price                        |
+| period         | String     |          | Time interval                        |
+| quantity       | BigDecimal |          | Trading quantity                     |
+| time           | Long       |          | Kline start time                     |
+| contractPairId | Long       |          | Contract trading pair IDs            |
+
+### Market Depth Update
+
+```json
+> Example
+{"data":{"asks":[{"price":"8.291","quantity":"20.163055"},{"price":"8.302","quantity":"27.074094"},{"price":"8.33","quantity":"16.12535"},{"price":"8.333","quantity":"7.617261"},{"price":"8.347","quantity":"7.274368"},{"price":"8.36","quantity":"29.826174"},{"price":"8.385","quantity":"6.084978"},{"price":"8.402","quantity":"13.370699"},{"price":"9.16","quantity":"16.669687"},{"price":"9.182","quantity":"115.09525"}],"bids":[{"price":"7.794","quantity":"7.979346"},{"price":"7.783","quantity":"24.131828"},{"price":"7.765","quantity":"16.167428"},{"price":"7.76","quantity":"21.880696"},{"price":"7.755","quantity":"14.01524"},{"price":"7.754","quantity":"4.673284"},{"price":"7.73","quantity":"16.060928"},{"price":"7.707","quantity":"25.653437"},{"price":"7.705","quantity":"20.066533"},{"price":"7.686","quantity":"19.35628"}]},"event":"api_depth","pair":"DOT-USDT","success":true}
+```
+
+| Field   | Type    | Required | Description                    |
+| ------- | ------- | -------- | ------------------------------ |
+| data    | Object  |          | Account information            |
+| event   | String  |          | See event table(api_depth)     |
+| success | Boolean |          | true,false                     |
+
+#### data
+
+| Field | Type | Required | Description  |
+| ----- | ---- | -------- | ------------ |
+| asks  | List |          | List of asks |
+| bids  | List |          | List of bids |
+
+#### asks
+
+| Field    | Type   | Required | Description  |
+| -------- | ------ | -------- | ------------ |
+| price    | String |          | Price        |
+| quantity | String |          | Quantity     |
+
+#### bids
+
+| Field    | Type   | Required | Description  |
+| -------- | ------ | -------- | ------------ |
+| price    | String |          | Price        |
+| quantity | String |          | Quantity     |
+
+### Trade Data Update
+
+| Field   | Type    | Required | Description                    |
+| ------- | ------- | -------- | ------------------------------ |
+| data    | Object  |          | Account information            |
+| event   | String  |          | See event table(api_trade)     |
+| success | Boolean |          | true,false                     |
+
+### Data
+
+| Field          | Type       | Required | Description                          |
+| ------------------- | ---------- | -------- | ------------------------------- |
+| contractMatchPairId | long       |          | Match record ID                 |
+| pair                | String     |          | Trading pair                    |
+| price               | BigDecimal |          | Price                           |
+| quantity            | BigDecimal |          | Quantity                        |
+| amount              | BigDecimal |          | Trading amount                  |
+| isLong              | Boolean    |          | true or false                   |
+| time                | String     |          | Creation time                   |
+| timestamp           | Long       |          | Time                            |
+| contractPairId      | Long       |          | Trading pair ID                 |
+
+### Tables
+
+#### periodEnum
+
+periodEnum represents the time periods for data used in the API.
+
+  | Parameter|
+  | ------- |
+  | 1SECOND |
+  | 1MIN    |
+  | 3MIN    |
+  | 5MIN    |
+  | 15MIN   |
+  | 30MIN   |
+  | 1HOUR   |
+  | 4HOUR   |
+  | 8HOUR   |
+  | 12HOUR  |
+  | 1DAY    |
+  | 1WEEK   |
+  | 1MONTH  |
+  | 1YEAR   |
+
+#### events
+
+ | Subscription |
+ | ------------ |
+ | api_entrust  |
+ | api_position |
+ | api_kline    |
+ | api_depth    |
+ | api_trade    |
+ | api_account  |
+
+ | Subscription     |
+ | ---------------- |
+ | api_entrust_res  |
+ | api_position_res |
+ | api_kline_res    |
+ | api_depth_res    |
+ | api_trade_res    |
+ | api_account_res  |
 
 <!-- ```ruby
 require 'kittn'
