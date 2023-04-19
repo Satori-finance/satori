@@ -654,48 +654,42 @@ url: `${wsUrl}/api/depth/ws`
 | timestamp           | Long       |          | Time                            |
 | contractPairId      | Long       |          | Trading pair ID                 |
 
-### Tables
+### Fields
 
 #### periodEnum
 
-periodEnum represents the time periods for data used in the API.
+periodEnum represents the time periods for data used in the API
 
-  | Parameter|
-  | ------- |
-  | 1SECOND |
-  | 1MIN    |
-  | 3MIN    |
-  | 5MIN    |
-  | 15MIN   |
-  | 30MIN   |
-  | 1HOUR   |
-  | 4HOUR   |
-  | 8HOUR   |
-  | 12HOUR  |
-  | 1DAY    |
-  | 1WEEK   |
-  | 1MONTH  |
-  | 1YEAR   |
+`1SECOND`
+`1MIN`
+`3MIN`
+`5MIN`
+`15MIN`
+`30MIN`
+`1HOUR`
+`4HOUR`
+`8HOUR`
+`12HOUR`
+`1DAY`
+`1WEEK`
+`1MONTH`
+`1YEAR`
 
 #### events
 
- | Subscription |
- | ------------ |
- | api_entrust  |
- | api_position |
- | api_kline    |
- | api_depth    |
- | api_trade    |
- | api_account  |
+`api_entrust`
+`api_position`
+`api_kline`
+`api_depth`
+`api_trade`
+`api_account`
 
- | Subscription     |
- | ---------------- |
- | api_entrust_res  |
- | api_position_res |
- | api_kline_res    |
- | api_depth_res    |
- | api_trade_res    |
- | api_account_res  |
+`api_entrust_res`
+`api_position_res`
+`api_kline_res`
+`api_depth_res`
+`api_trade_res`
+`api_account_res`
 
 <!-- ```ruby
 require 'kittn'
