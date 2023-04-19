@@ -273,7 +273,7 @@ public class HMacUtil {
     }
 }
 ```
-# Subscriptions
+## Subscriptions
 ### Subscribing to Account Data
 
 url: `${wsUrl}/api/account/ws`
