@@ -221,11 +221,6 @@ Where:
 
 # Websocket API
 
-Satori offers a WebSocket API for streaming updates.
-
-- Testing: ws://zk-test.satori.finance
-- Production: ws://zk.satori.finance
-
 > Example
 
 ```java
@@ -273,7 +268,15 @@ public class HMacUtil {
     }
 }
 ```
+
+
+Satori offers a WebSocket API for streaming updates.
+
+- Testing: `ws://zk-test.satori.finance`
+- Production: `ws://zk.satori.finance`
+
 ## Subscriptions
+
 ### Subscribing to Account Data
 
 url: `${wsUrl}/api/account/ws`
