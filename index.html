@@ -592,13 +592,6 @@
 <li><code>Average opening value</code> is the the value of position at average opening price</li>
 </ul>
 <h1 id='websocket-api'>Websocket API</h1>
-<p>Satori offers a WebSocket API for streaming updates.</p>
-
-<ul>
-<li>Testing: ws://zk-test.satori.finance</li>
-<li>Production: ws://zk.satori.finance</li>
-</ul>
-
 <blockquote>
 <p>Example</p>
 </blockquote>
@@ -644,7 +637,14 @@
         <span class="k">return</span> <span class="n">hs</span><span class="o">.</span><span class="na">toString</span><span class="o">().</span><span class="na">toLowerCase</span><span class="o">();</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div><h2 id='subscriptions'>Subscriptions</h2><h3 id='subscribing-to-account-data'>Subscribing to Account Data</h3>
+</code></pre></div>
+<p>Satori offers a WebSocket API for streaming updates.</p>
+
+<ul>
+<li>Testing: <code>ws://zk-test.satori.finance</code></li>
+<li>Production: <code>ws://zk.satori.finance</code></li>
+</ul>
+<h2 id='subscriptions'>Subscriptions</h2><h3 id='subscribing-to-account-data'>Subscribing to Account Data</h3>
 <p>url: <code>${wsUrl}/api/account/ws</code></p>
 
 <blockquote>
