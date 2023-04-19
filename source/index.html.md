@@ -226,10 +226,9 @@ Satori offers a WebSocket API for streaming updates.
 - Testing: ws://zk-test.satori.finance
 - Production: ws://zk.satori.finance
 
-
-```java
 > Example
 
+```java
 JSONObject params=new JSONObject();
             params.put("method","SUBSCRIBE");
             params.put("event","api_account");
@@ -241,8 +240,11 @@ JSONObject params=new JSONObject();
             String sha256 = HMacUtil.sha256(String.valueOf(time), "5928758659f61d099c191607b3ebdf07aabf1cf2");
             params.put("signature",sha256);
             System.out.println(params.toJSONString());
+```
 
 > HMacUtil.java
+
+```java
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
@@ -276,12 +278,15 @@ public class HMacUtil {
 
 url: `${wsUrl}/api/account/ws`
 
+> Example Request
 
 ```json
-> Request Example:
 {"symbol":"MATIC","method":"SUBSCRIBE","apiKey":"5WlQeUYgKx85H8ID3XygdYVMOFjlXyw9","signature":"1b883450a6bb3749729d429133fd06cec28215a6abcb876b08cc531ed86b7782","event":"api_account","timestamp":1657157345159}
+```
 
-> Response Example:
+> Example Response
+
+```json
 {"success":true,"msg":"subscribe success: api_account","method":"SUBSCRIBE","event":"api_account"}
 ```
 
@@ -436,8 +441,9 @@ url: `${wsUrl}/api/depth/ws`
 ## Updates
 ### Account Update
 
-```json
 > Example response
+
+```json
 {"data":{"availableAmount":"8000","coinId":5,"frozenAmount":"0","logId":8,"operateAmount":"0.00","symbol":"DOT","coinId":0},"event":"api_account","success":true}
 ```
 
@@ -532,8 +538,9 @@ url: `${wsUrl}/api/depth/ws`
 
 ### Market Depth Update
 
-```json
 > Example
+
+```json
 {"data":{"asks":[{"price":"8.291","quantity":"20.163055"},{"price":"8.302","quantity":"27.074094"},{"price":"8.33","quantity":"16.12535"},{"price":"8.333","quantity":"7.617261"},{"price":"8.347","quantity":"7.274368"},{"price":"8.36","quantity":"29.826174"},{"price":"8.385","quantity":"6.084978"},{"price":"8.402","quantity":"13.370699"},{"price":"9.16","quantity":"16.669687"},{"price":"9.182","quantity":"115.09525"}],"bids":[{"price":"7.794","quantity":"7.979346"},{"price":"7.783","quantity":"24.131828"},{"price":"7.765","quantity":"16.167428"},{"price":"7.76","quantity":"21.880696"},{"price":"7.755","quantity":"14.01524"},{"price":"7.754","quantity":"4.673284"},{"price":"7.73","quantity":"16.060928"},{"price":"7.707","quantity":"25.653437"},{"price":"7.705","quantity":"20.066533"},{"price":"7.686","quantity":"19.35628"}]},"event":"api_depth","pair":"DOT-USDT","success":true}
 ```
 
