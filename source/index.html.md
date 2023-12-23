@@ -63,9 +63,9 @@ The maintenance margin rates are determined on a per-token-pair basis:
 
 | Token | Maintenance Margin Rate |
 | ----- | ----------------------- |
-| BTC   | 0.5%                    |
-| ETH   | 0.5%                    |
-| MATIC | 0.5%                    |
+| BTC   | 1.5%                    |
+| ETH   | 1.5%                    |
+| MATIC | 1.5%                    |
 
 For example, a long leveraged position in BTC-USDT may be liquidated after the mark price dips below 0.5% above the bankruptcy price.
 
