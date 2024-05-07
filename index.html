@@ -319,6 +319,9 @@
             <a href="#introduction" class="toc-h1 toc-link" data-title="Introduction">Introduction</a>
           </li>
           <li>
+            <a href="#pre-list-perps" class="toc-h1 toc-link" data-title="Pre-List Perps">Pre-List Perps</a>
+          </li>
+          <li>
             <a href="#user-funds" class="toc-h1 toc-link" data-title="User funds">User funds</a>
               <ul class="toc-list-h2">
                   <li>
@@ -386,7 +389,46 @@
       <div class="dark-box"></div>
       <div class="content">
         <h1 id='introduction'>Introduction</h1>
-<p>Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized financial derivatives platform built on Polygon zkEVM, zkSync, and Scroll. It features an order book model in collaboration with many market makers to provide comprehensive exposure to a wide range of assets, and an “off-chain aggregation and on-chain settlement” design that combines the security and transparency of a decentralized exchange, with the speed and usability of a centralized exchange.</p>
+<p>Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized financial derivatives platform built on Base, Linea, Polygon zkEVM, Scroll, X Layer, and zkSync. It features an order book model in collaboration with many market makers to provide comprehensive exposure to a wide range of assets, and an “off-chain aggregation and on-chain settlement” design that combines the security and transparency of a decentralized exchange, with the speed and usability of a centralized exchange.</p>
+<h1 id='pre-list-perps'>Pre-List Perps</h1>
+<p>We assume the total issuance of a Pre-List Perp is 1 billion.</p>
+
+<p>The transition of LINEA, SCROLL, or ZKSYNC into a standard perpetual is contingent upon its maximum supply reaching precisely 1 billion. If this condition is not met, the settlement of the Pre-List Perp will be based on the fully diluted market cap divided by 1 billion, occurring one week following its listing on a Centralized Exchange (CEX), such as Binance.
+Following this settlement, the Pre-List Perp will be removed from listing, making way for the introduction of a new, normal perpetual.</p>
+
+<p>Here are the detailed rules for each Pre-List Perp:</p>
+
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>Maximum Leverage</td>
+<td>3x</td>
+</tr>
+<tr>
+<td>Maintenance Margin Fraction</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Max Supply</td>
+<td>1 Billion</td>
+</tr>
+<tr>
+<td>Position Limit Per User</td>
+<td>$10,000</td>
+</tr>
+<tr>
+<td>Total Open Interest Limit</td>
+<td>$1,000,000</td>
+</tr>
+<tr>
+<td>Margin Mode</td>
+<td>Isolated</td>
+</tr>
+</tbody></table>
 <h1 id='user-funds'>User funds</h1><h2 id='adding-funds'>Adding Funds</h2>
 <p>Users can directly deposit USDT to trade on the Satori exchange.</p>
 <h2 id='withdrawing-funds'>Withdrawing Funds</h2>
