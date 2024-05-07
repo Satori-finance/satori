@@ -19,7 +19,25 @@ meta:
 
 # Introduction
 
-Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized financial derivatives platform built on Polygon zkEVM, zkSync, and Scroll. It features an order book model in collaboration with many market makers to provide comprehensive exposure to a wide range of assets, and an “off-chain aggregation and on-chain settlement” design that combines the security and transparency of a decentralized exchange, with the speed and usability of a centralized exchange.
+Welcome to the docs for the Satori Perpetual Protocol. Satori is a decentralized financial derivatives platform built on Base, Linea, Polygon zkEVM, Scroll, X Layer, and zkSync. It features an order book model in collaboration with many market makers to provide comprehensive exposure to a wide range of assets, and an “off-chain aggregation and on-chain settlement” design that combines the security and transparency of a decentralized exchange, with the speed and usability of a centralized exchange.
+
+# Pre-List Perps
+
+We assume the total issuance of a Pre-List Perp is 1 billion.
+
+The transition of LINEA, SCROLL, or ZKSYNC into a standard perpetual is contingent upon its maximum supply reaching precisely 1 billion. If this condition is not met, the settlement of the Pre-List Perp will be based on the fully diluted market cap divided by 1 billion, occurring one week following its listing on a Centralized Exchange (CEX), such as Binance.
+Following this settlement, the Pre-List Perp will be removed from listing, making way for the introduction of a new, normal perpetual.
+
+Here are the detailed rules for each Pre-List Perp:
+
+| Field                       | Value         |
+| --------------------------- | ------------- |
+| Maximum Leverage            | 3x            |
+| Maintenance Margin Fraction | 30%           |
+| Max Supply                  | 1 Billion     |
+| Position Limit Per User     | $10,000       |
+| Total Open Interest Limit   | $1,000,000    |
+| Margin Mode                 | Isolated      |
 
 # User funds
 
